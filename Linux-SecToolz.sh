@@ -7,7 +7,7 @@ echo -e "\e[31m======================================================";
 echo ""
 echo -e "\e[92m Linux SecToolz Installer"
 echo " Tool Package Installer TPI v1.0"
-echo " Created by DevSecEd for Debian based distros"
+echo " Created by bb21ckm4 for Debian based distros"
 echo ""
 echo ""
 echo -e "\e[31m======================================================";
