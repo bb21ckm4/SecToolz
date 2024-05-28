@@ -51,7 +51,7 @@ apt-get install aircrack-ng cowpatty eapmd5pass fern-wifi-cracker freeradius-wpe
 apt-get install powercat wce windows-binaries windows-privesc-check
 ;;
 9)
-add-apt-repository contrib && add-apt-repository non-free && echo "deb https://deb.parrot.sh/parrot lory main contrib non-free" | tee -a /etc/apt/sources.list && echo "deb-src https://deb.parrot.sh/parrot lory main contrib non-free" | tee -a /etc/apt/sources.list && apt-get update
+add-apt-repository contrib && add-apt-repository non-free && echo "deb http://http.kali.org/kali kali-rolling main non-free contrib" | tee -a /etc/apt/sources.list && echo "deb-src http://http.kali.org/kali kali-rolling main non-free contrib" | tee -a /etc/apt/sources.list && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys ED444FF07D8D0BF6 && apt-get update
 ;;
 BB)
 exit 0
