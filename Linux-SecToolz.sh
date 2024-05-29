@@ -27,7 +27,7 @@ read -p " Your Choice [1-9] BB For Exit :" menu;
 echo "=====================================================";
 case $menu in
 1)
-apt-get install apt-transport-https bundler curl bind9-dnsutils ftp git gnome-disk-utility git gufw htop libc6 libgcc-s1 libpcap0.8 libpq5 libsqlite3-0 libstdc++6 libreoffice locate nasm net-tools openssl openvpn postgresql python3-full python3-pip rake rdesktop ruby ruby-json software-properties-common tcpdump terminator vlc wireshark wget
+apt-get install apt-transport-https bundler codium curl bind9-dnsutils ftp git gnome-disk-utility git gufw htop libc6 libgcc-s1 libpcap0.8 libpq5 libsqlite3-0 libstdc++6 libreoffice locate nasm net-tools openssl openvpn postgresql python3-full python3-pip rake rdesktop ruby ruby-json software-properties-common tcpdump terminator tor vlc wireshark wget
 ;;
 2)
 apt-get install burpsuite dirb joomscan ffuf mitmproxy nishang nikto dirbuster php libproxychains4 nginx proxychains4 skipfish sqlmap sslscan wafw00f webshells whatweb zaproxy && gem install wpscan
