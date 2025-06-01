@@ -1,0 +1,342 @@
+
+---------------------------------------
+Most Used:
+---------------------------------------
+list               - show source code
+run                - execute program
+break              - insert breakpoint
+x                  - examine memory
+disassemble        - show assembly code
+continue           - resume exection
+info registers     - see registers
+info proc mapping  - see memory map
+
+Usage Ex:
+(gdb) list
+(gdb) break 7
+(gdb) run
+(gdb) info registers
+(gdb) x/20x $sp    #ARM stack point (x/20x $esp) for x86
+(gdb) disassemble main
+(gdb) continue
+(gdb) info proc mapping
+
+---------------------------------------
+Quick Access:
+---------------------------------------
+
+export PS1='SecDev# '
+nasm -f elf64 demo.nasm -o demo.o
+ld demo.o -o demo
+gcc -ggdb demo.c -o demo_DEBUG
+gdb -q ./demo -tui    #Use -q for  quiet mode no banner
+set disassembly-flavor intel
+layout asm
+layout regs
+info registers
+disas
+break
+run
+stepi
+
+---------------------------------------
+Assembly Related:
+---------------------------------------
+
+nasm -hf - Look at different binaries
+nasm -f elf64 demo.nasm -o demo.o - Convert file to 64bit elf and object file
+ld demo.o -o demo - link object to create binary
+objdump -M intel -d demo.o - dump disassembly in intel format
+cat /usr/include/x86_64-linux-gnu/asm/unistd_64.h - lists syscalls for 64-bit asm files
+
+
+---------------------------------------
+C Related:
+---------------------------------------
+
+gcc demo.c -o demo - compile program
+gcc -g  - using OS native symbols
+gcc -ggdb - uses GDB specific symbols
+gcc demo.c -o demo_NO_DEBUG
+gcc -ggdb demo.c -o demo_DEBUG
+objcopy --only-keep-debug demo_DEBUG DEBUG_symbols - takes the debug symbols off of the binary and puts the symbols into a separate file, doesn't take the symbols out of the original file
+less DEBUG_symbols - view file to look for symbols, Shift+Ctrl+F to search
+strip --strip-debug demo_DEBUG - actually strips the symbols off of the file
+strip --strip-debug --strip-unneeded demo_DEBUG - strips off variables and functions aside from very basic info, reduces size of binary and good security practice for bad guys
+objcopy --add-gnu-debuglink=DEBUG_symbols demo_NO_DEBUG - Adding symbols to a binary
+nm ./demo_DEBUG - column1-virtual address, column2-symbol type, column3-symbol name
+nm ./demo_DEBUG | grep AddNumbers - looking for certain function name
+nm -n ./demo_DEBUG - sort symbols
+nm -g ./demo_DEBUG - show external symbols
+nm -S ./demo_DEBUG - show size
+nm ./demo_DEBUG | grep ' B ' - show symbol type for BSS
+nm -a ./demo_DEBUG | grep ' D ' - show initialized data
+nm -a ./demo_DEBUG | grep ' T ' - show symbols in text section
+strace ./demo 20 30 - shows system calls binary is making
+strace -o stdemo ./demo 20 30 - sends output of strace into file
+strace -t ./demo 20 30 - shows timestamp
+strace -r ./demo 20 30 - shows relative timestamp in seconds
+strace -r -e write ./demo 20 30 - shows relative timestamp and write call
+strace -e connect nc google.com 80 | grep 53 - shows all connect system calls on port 80 looking for 53
+strace -e send,recv nc google.com 80 - shows all send & receive syscalls
+sudo strace -p 4618 - connect to running process per pid and show syscalls
+strace -c nc google.com 80 - can use to show statistics on syscalls
+
+
+---------------------------------------
+GDB Related:
+---------------------------------------
+
+break *$rip+27
+break *0x0000555555554779 - sets breakpoint at memory address use asterisk before address
+break 52 - sets breakpoint at line 52
+break EchoInput - sets 2nd breakpoint at EchoInput function
+break main - sets breakpoint at main function
+c - continue to run
+condition 1 $eax != 0
+condition 1 counter == 5 - set condition on breakpoint for when counter variable hits 5
+continue - continue running program after breakpoint
+delete 1 - deletes first breakpoint
+disable 1 - disables first breakpoint
+disassemble main - dump of assembler code for main function
+enable 1 - enables first breakpoint
+gdb -q ./demo -tui - Use tui quiet mode
+gdb -q demo - use -q for quiet
+gdb ./demo - debug the program
+help step
+help stepi
+help x - shows help for how to examine memory in GDB
+info breakpoints - lists breakpoints
+info files
+info functions - lists all functions if symbols are loaded
+info registers - looks at the cpu registers after running the program in GDB
+info scope - hit double TAB to show more info, used to show local variables
+info scope AddNumbers - shows local variables
+info scope main
+info sources - lists sources of the binary
+info variables - only shows global and static variables not local
+l 30 - l is short for list and its starting at line 30 where the breakpoint is set
+layout asm - to layout assembly in tui mode
+layout regs - to show registers in tui mode
+list - lists information usually starting at main function
+list 1 - lists information starting at line 1, hit ENTER to go through file
+maint print symbols symtest - print symbols to a file called symtest
+nexti - next instruction
+print argv[1] - shows value on screen
+print sum
+run AAAA 10 20 - run with command line arguments
+run Ed - runs the program with any input into the application
+set {char} ( 0x7fffffffe33e + 1) = 'B'
+set {char} ( 0x7fffffffe33e + 2) = 'B'
+set {char} ( 0x7fffffffe33e + 3) = 'B'
+set {char} 0x7fffffffe33e = 'B'  - changed value to B and modified bytes after below
+set $i = 10 - set convenience variable equal to 10
+set $rax = 10
+set disassembly-flavor intel
+set sum = 2000 - modified sum variable to equal 2000
+shell clear - or Ctrl +L to clear screen
+step - running after breakpoint on a per line basis
+stepi - running after breakpoint on a per assembly instruction basis
+symbol-file DEBUG_symbols - adding symbols to a binary via GDB
+x/10i 0x555555554766 - viewing 10 instructions starting at the memory location
+x/10xw $rsp - shows 10 instructions in hex, word value for register rsp on stack
+x/8xb &var1
+x/i 0x555555554766 - viewing instruction for main function
+x/s argv[0] - shows memory address and value currently loaded
+
+
+Misc:
+export PS1='SecDev# ' - Change prompt
+netstat -nlt - look at network connections
+ps ax | grep SGDE - show pid for process
+lscpu - view cpu info for os
+cat /proc/cpuinfo - view cpu info
+cat /proc/meminfo - view memory info
+lsb_release -a - show info on OS version
+uname -a - kernel info
+ps -aef --forest  - shows tree list of processes
+netstat -nputw - good netstat for connections/programs
+
+GDB commands by function - simple guide
+---------------------------------------
+More important commands have a (*) by them.
+
+Startup
+%gdb -help             			print startup help, show switches
+*%gdb object           			normal debug
+*%gdb object core      			core debug (must specify core file)
+%%gdb object pid       			attach to running process
+%gdb                   			use file command to load object
+
+Help
+*(gdb) help            	 		list command classes
+(gdb) help running      			list commands in one command class
+(gdb) help run          			bottom-level help for a command "run"
+(gdb) help info         			list info commands (running program state)
+(gdb) help info line    			help for a particular info command
+(gdb) help show         			list show commands (gdb state)
+(gdb) help show commands     		specific help for a show command
+
+Breakpoints
+*(gdb) break main       			set a breakpoint on a function
+*(gdb) break 101        			set a breakpoint on a line number
+*(gdb) break basic.c:101    		set breakpoint at file and line (or function)
+*(gdb) info breakpoints     		show breakpoints
+*(gdb) delete 1         			delete a breakpoint by number
+(gdb) delete            			delete all breakpoints (prompted)
+(gdb) clear             			delete breakpoints at current line
+(gdb) clear function    			delete breakpoints at function
+(gdb) clear line        			delete breakpoints at line
+(gdb) disable 2         			turn a breakpoint off, but don't remove it
+(gdb) enable 2          			turn disabled breakpoint back on
+(gdb) tbreak function|line        	set a temporary breakpoint
+(gdb) commands break-no ... end   	set gdb commands with breakpoint
+(gdb) ignore break-no count       	ignore bpt N-1 times before activation
+(gdb) condition break-no expression     break only if condition is true
+(gdb) condition 2 i == 20   		example: break on breakpoint 2 if i equals 20
+(gdb) watch expression       		set software watchpoint on variable
+(gdb) info watchpoints      		show current watchpoints
+
+Running the program
+*(gdb) run              			run the program with current arguments
+*(gdb) run args redirection 		run with args and redirection
+(gdb) set args args... 			set arguments for run
+(gdb) show args        			show current arguments to run
+*(gdb) cont            			continue the program
+*(gdb) step            			single step the program; step into functions
+(gdb) step count       			singlestep \fIcount\fR times
+*(gdb) next            			step but step over functions
+(gdb) next count      			next \fIcount\fR times
+*(gdb) CTRL-C          			actually SIGINT, stop execution of current program
+*(gdb) attach process-id   		attach to running program
+*(gdb) detach        			detach from running program
+*(gdb) finish        			finish current function's execution
+(gdb) kill           			kill current executing program
+
+Stack backtrace
+*(gdb) bt               			print stack backtrace
+(gdb) frame             			show current execution position
+(gdb) up                			move up stack trace  (towards main)
+(gdb) down              			move down stack trace (away from main)
+*(gdb) info locals     	 		print automatic variables in frame
+(gdb) info args         			print function parameters
+
+Browsing source
+*(gdb) list 101         			list 10 lines around line 101
+*(gdb) list 1,10        			list lines 1 to 10
+*(gdb) list main        			list lines around function
+*(gdb) list basic.c:main    		list from another file basic.c
+*(gdb) list -           			list previous 10 lines
+(gdb) list *0x22e4      			list source at address
+(gdb) cd dir            			change current directory to \fIdir\fR
+(gdb) pwd               			print working directory
+(gdb) search regexpr    			forward current for regular expression
+(gdb) reverse-search regexpr        	backward search for regular expression
+(gdb) dir dirname       			add directory to source path
+(gdb) dir               			reset source path to nothing
+(gdb) show directories      		show source path
+
+Browsing Data
+*(gdb) print expression     		print expression, added to value history
+*(gdb) print/x expressionR 		print in hex
+(gdb) print array[i]@count  		artificial array - print array range
+(gdb) print $           			print last value
+(gdb) print *$->next    			print thru list
+(gdb) print $1          			print value 1 from value history
+(gdb) print ::gx        			force scope to be global
+(gdb) print 'basic.c'::gx  		global scope in named file (>=4.6)
+(gdb) print/x &main     			print address of function
+(gdb) x/countFormatSize address        	low-level examine command
+(gdb) x/x &gx           			print gx in hex
+(gdb) x/4wx &main       			print 4 longs at start of \fImain\fR in hex
+(gdb) x/gf &gd1         			print double
+(gdb) help x            			show formats for x
+*(gdb) info locals      			print local automatics only
+(gdb) info functions regexp         	print function names
+(gdb) info variables  regexp       	print global variable names
+*(gdb) ptype name        			print type definition
+(gdb) whatis expression       		print type of expression
+*(gdb) set variable = expression       	assign value
+(gdb) display expression        		display expression result at stop
+(gdb) undisplay        			delete displays
+(gdb) info display     			show displays
+(gdb) show values      			print value history (>= gdb 4.0)
+(gdb) info history     			print value history (gdb 3.5)
+
+Object File manipulation
+(gdb) file object               		load new file for debug (sym+exec)
+(gdb) file                      		discard sym+exec file info
+(gdb) symbol-file object        		load only symbol table
+(gdb) exec-file object          		specify object to run (not sym-file)
+(gdb) core-file core            		post-mortem debugging
+
+Signal Control
+(gdb) info signals              		print signal setup
+(gdb) handle signo actions      		set debugger actions for signal
+(gdb) handle INT print          		print message when signal occurs
+(gdb) handle INT noprint        		don't print message
+(gdb) handle INT stop           		stop program when signal occurs
+(gdb) handle INT nostop         		don't stop program
+(gdb) handle INT pass           		allow program to receive signal
+(gdb) handle INT nopass         		debugger catches signal; program doesn't
+(gdb) signal signo              		continue and send signal to program
+(gdb) signal 0                  		continue and send no signal to program
+
+Machine-level Debug
+(gdb) info registers            		print registers sans floats
+(gdb) info all-registers        		print all registers
+(gdb) print/x $pc               		print one register
+(gdb) stepi                     		single step at machine level
+(gdb) si                        		single step at machine level
+(gdb) nexti                     		single step (over functions) at machine level
+(gdb) ni                        		single step (over functions) at machine level
+(gdb) display/i $pc             		print current instruction in display
+(gdb) x/x &gx                   		print variable gx in hex
+(gdb) info line 22              		print addresses for object code for line 22
+(gdb) info line *0x2c4e         		print line number of object code at address
+(gdb) x/10i main                		disassemble first 10 instructions in \fImain\fR
+(gdb) disassemble addr          		dissassemble code for function around addr
+
+History Display
+(gdb) show commands             		print command history (>= gdb 4.0)
+(gdb) info editing              		print command history (gdb 3.5)
+(gdb) ESC-CTRL-J                		switch to vi edit mode from emacs edit mode
+(gdb) set history expansion on       	turn on c-shell like history
+(gdb) break class::member       		set breakpoint on class member. may get menu
+(gdb) list class::member        		list member in class
+(gdb) ptype class               		print class members
+(gdb) print *this               		print contents of this pointer
+(gdb) rbreak regexpr            		useful for breakpoint on overloaded member name
+
+Miscellaneous
+(gdb) define command ... end        	define user command
+*(gdb) RETURN                   		repeat last command
+*(gdb) shell command args       		execute shell command
+*(gdb) source file              		load gdb commands from file
+*(gdb) quit                     		quit gdb
+Shellcode
+gcc -fno-stack-protector -z execstack shell.c -o shell - compile shellcode to run w/o nulls
+for i in $(objdump -D shell.o |grep "^ " |cut -f2); do echo -n '\x'$i; done; echo - use objdump to pull shellcode from object
+
+Skeleton Program:
+
+#include<stdio.h>
+#include<string.h>
+
+unsigned char code[] = \
+"SHELLCODE GOES HERE";
+
+main()
+{
+	printf("Shellcode Length:  %d\n", (int)strlen(code));
+	int (*ret)() = (int(*)())code;
+	ret();
+}
+
+
+Initial Class Setup:
+
+-sudo apt-get install build-essential make libglib2.0-dev
+
+
+

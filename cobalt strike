@@ -1,0 +1,230 @@
+
+Housekeeping
+============
+The following commands are built into Beacon and exist to configure Beacon or perform house-keeping actions
+
+    !                          Run a command from the history
+    argue                      Spoof arguments for matching processes
+    beacon_config              Functions for managing beacon configuration
+    beacon_gate                Functions for managing beacon gate
+    blockdlls                  Block non-Microsoft DLLs in child processes
+    cancel                     Cancel a download that's in-progress
+    checkin                    Call home and post data
+    clear                      Clear beacon queue
+    data-store                 Store post-ex items to Beacon
+    downloads                  Lists file downloads in progress
+    file_browser               Open the file browser tab for this beacon
+    help                       Help menu
+    history                    Show the command history
+    jobs                       List long-running post-exploitation tasks
+    mode                       Sets the DNS Beacon mode [dns|dns6|dns-txt] (DNS beacon only)
+    mode dns                   Use DNS A as data channel (DNS beacon only)
+    mode dns-txt               Use DNS TXT as data channel (DNS beacon only)
+    mode dns6                  Use DNS AAAA as data channel (DNS beacon only)
+    note                       Assign a note to this Beacon
+    powershell-import          Import a powershell script
+    ppid                       Set parent PID for spawned post-ex jobs
+    process_browser            Open the process browser tab for this beacon
+    sleep                      Set beacon sleep time
+    spawnto                    Set executable to spawn processes into
+    syscall-method             Change or query the syscall method
+    variables                  Display the available command line variables
+    windows_error_code         Show the Windows error code for a Windows error code number
+
+Native
+======
+These commands are built into Beacon and typically rely on Win32 APIs to meet their objectives
+
+    cd                         Change directory
+    connect                    Connect to a Beacon peer over TCP
+    cp                         Copy a file
+    dllinject                  Inject a Reflective DLL into a process
+    download                   Download a file
+    drives                     List drives on target
+    execute                    Execute a program on target (no output)
+    execute-dll                Execute a user defined postex task
+    exit                       Terminate the beacon session
+    getprivs                   Enable system privileges on current token
+    getuid                     Get User ID
+    inject                     Spawn a session in a specific process
+    inline-execute             Run a Beacon Object File in this session
+    jobkill                    Kill a long-running post-exploitation task
+    kill                       Kill a process
+    link                       Connect to a Beacon peer over a named pipe
+    ls                         List files
+    make_token                 Create a token to pass credentials
+    mkdir                      Make a directory
+    mv                         Move a file
+    powershell                 Execute a command via powershell.exe
+    ps                         Show process list
+    pwd                        Print current directory
+    rev2self                   Revert to original token
+    rm                         Remove a file or folder
+    rportfwd                   Setup a reverse port forward
+    rportfwd_local             Setup a reverse port forward via Cobalt Strike client
+    run                        Execute a program on target (returns output)
+    runas                      Execute a program as another user
+    runu                       Execute a program under another PID
+    setenv                     Set an environment variable
+    shell                      Execute a command via cmd.exe
+    shinject                   Inject shellcode into a process
+    shspawn                    Spawn process and inject shellcode into it
+    socks                      Start/Stop a SOCKS4a/SOCKS5 server to relay traffic
+    spawn                      Spawn a session
+    spawnas                    Spawn a session as another user
+    spawnu                     Spawn a session under another process
+    spunnel                    Spawn and tunnel an agent via rportfwd
+    spunnel_local              Spawn and tunnel an agent via Cobalt Strike client rportfwd
+    steal_token                Steal access token from a process
+    token-store                Hot-swappable access tokens
+    unlink                     Disconnect from parent Beacon
+    upload                     Upload a file
+
+Postex DLL
+==========
+These commands use a Postex DLL to achieve their objectives
+
+    browserpivot               Setup a browser pivot session
+    chromedump                 Recover credentials from Google Chrome
+    covertvpn                  Deploy Covert VPN client
+    dcsync                     Extract a password hash from a DC
+    desktop                    View and interact with target's desktop
+    execute-assembly           Execute a local .NET program in-memory on target
+    hashdump                   Dump password hashes
+    keylogger                  Start a keystroke logger
+    logonpasswords             Dump credentials and hashes with mimikatz
+    mimikatz                   Runs a mimikatz command
+    net                        Network and host enumeration tool
+    portscan                   Scan a network for open services
+    powerpick                  Execute a command via Unmanaged PowerShell
+    printscreen                Take a single screenshot via PrintScr method
+    psinject                   Execute PowerShell command in specific process
+    pth                        Pass-the-hash using Mimikatz
+    screenshot                 Take a single screenshot
+    screenwatch                Take periodic screenshots of desktop
+    ssh                        Use SSH to spawn an SSH session on a host
+    ssh-key                    Use SSH to spawn an SSH session on a host
+
+BOF
+===
+These commands execute as a Beacon Object File (BOF) and use the current Beacon thread
+
+    clipboard                  Attempt to get text clipboard contents
+    dllload                    Load DLL into a process with LoadLibrary()
+    elevate                    Spawn a session in an elevated context
+    getsystem                  Attempt to get SYSTEM
+    jump                       Spawn a session on a remote host
+    kerberos_ccache_use        Apply kerberos ticket from cache to this session
+    kerberos_ticket_purge      Purge kerberos tickets from this session
+    kerberos_ticket_use        Apply kerberos ticket to this session
+    reg                        Query the registry
+    remote-exec                Run a command on a remote host
+    runasadmin                 Execute a program in an elevated context
+    timestomp                  Apply timestamps from one file to another
+
+Uncategorized User Defined Commands
+===================================
+User defined commands which are not registered with a help group
+
+    ProcessDestroy             Closes handle(s) in a process
+    ProcessListHandles         Lists open handles in process
+    adcs_enum                  Enumerates CAs and templates in the AD using Win32 functions
+    adcs_enum_com              Enumerates CAs and templates in the AD using ICertConfig COM object
+    adcs_enum_com2             Enumerates CAs and templates in the AD using IX509PolicyServerListManager COM object
+    adcs_request               Request an enrollment certificate
+    adcs_request_on_behalf     Requests an enrollment certificate on behalf of another user
+    adduser                    Add a new user to a machine.
+    addusertogroup             Add the specified user to the specified group
+    adv_audit_policies         Retrieves advanced security audit policies
+    arp                        Runs an internal ARP command
+    cacls                      lists file permissions
+    chromeKey                  Decrypts the provided base64 encoded Chrome key
+    dir                        Lists a target directory using BOF.
+    domainenum                 list usersaccounts in the current domain
+    driversigs                 checks drivers for known edr vendor names
+    enableuser                 Enables and unlocks the specified user account
+    enumLocalSessions          Enumerate the currently attached user sessions both local and over rdp
+    enum_filter_driver         Lists filter drivers on the system
+    env                        Print environment variables.
+    findLoadedModule           Finds processes loading a specific dll
+    get_password_policy        gets a server or DC's configured password policy
+    get_priv                   Activate a token privledge
+    ghost_task                 Create or modify a local or remote scheduled task, without triggering Windows events 4698 and 106.
+    global_unprotect           Usage: global_unprotect
+
+    There are no arguments to this command
+    ipconfig                   runs an internal ipconfig command
+    lastpass                   Searches memory for LastPass passwords and hashes
+    ldapsearch                 BOF - Perform LDAP search.
+    list_firewall_rules        List all windows firewall rules
+    listdns                    lists dns cache entries
+    listmods                   lists process modules
+    listpipes                  Lists local named pipes
+    locale                     Retrieve System Locale Information, Date Format, and Country
+    make_token_cert            Applies an impersonation token based on the Alt Name in a supplied .pfx file
+    netGroupList               List Groups in this domain (or specified domain if given)
+    netGroupListMembers        List the members of the specified group in this domain (or specified domain if given)
+    netLocalGroupList          List Groups in this server (or specified server if given)
+    netLocalGroupListMembers   List the members of the specified group in this server (or specified server if given)
+    netLocalGroupListMembers2  List the members of the specified group in this server (or specified server if given). Output is compatible with bofhound
+    netloggedon                Returns users logged on the local (or a remote) machine - administrative rights needed
+    netloggedon2               Returns users logged on the local (or a remote) machine via NetWkstaUserEnum- administrative rights needed. Output is compatible with bofhound
+    netsession                 list sessions on server
+    netsession2                list sessions on server. Output is compatible with bofhound
+    netshares                  list shares on local or remote computer
+    netsharesAdmin             list shares on local or remote computer and gets more info then standard netshares(requires admin)
+    netstat                    get local ipv4 udp/tcp listening and connected ports
+    nettime                    Returns information about the current time on a remote (or local) machine.
+    netuptime                  Returns information about the boot time on the local (or a remote) machine
+    netuse_add                 Connect to a shared resource
+    netuse_delete              disconnects from a shared resource
+    netuse_list                Lists local bound connections
+    netuser                    list user info
+    netview                    lists local workstations and servers
+    notepad                    Search for open notepad and notepad++ windows and grab text from the editor control object
+    nslookup                   internally perform a dns query
+    office_tokens              Searches memory for Office JWT Access Tokens
+    probe                      Check if a port is open
+    procdump                   Dumps the specified process to the specified output file
+    reg_delete                 Deletes the registry key or value
+    reg_query                  querys registry Key OR value
+    reg_query_recursive        recursivly querys registry key
+    reg_save                   Saves the registry path and all subkeys to disk
+    reg_set                    Creates or sets a registry key or value
+    regsession                 Returns users logged on the local (or a remote) machine via the registry - administrative rights needed. Output is compatible with bofhound
+    resources                  List available memory and space on the primary disk drive
+    resume                     resume a process by pid
+    routeprint                 prints ipv4 routes on the machine
+    sc_config                  Configures an existing service
+    sc_create                  Creates a new service
+    sc_delete                  Deletes a service
+    sc_description             Sets the description of an existing service
+    sc_enum                    Enumerate all service configs in depth
+    sc_failure                 Changes the actions upon failure
+    sc_qc                      queries a services configuration
+    sc_qdescription            queries a services description
+    sc_qfailure                list service failure actions
+    sc_qtriggerinfo            lists service triggers
+    sc_query                   queries a services status
+    sc_start                   Starts a service
+    sc_stop                    Stops a service
+    schtaskscreate             Creates a new scheduled task
+    schtasksdelete             Deletes the specified scheduled task or folder
+    schtasksenum               enumerates all scheduled tasks on the local or target machine
+    schtasksquery              lists the details of the requested task
+    schtasksrun                Run the specified scheduled task
+    schtasksstop               Stops the specified scheduled task
+    setuserpass                Sets the specified user's password
+    shspawnas                  spawn / inject as specified user
+    shutdown                   Shutdown or reboot a local or remote system in the number of seconds provided
+    slackKey                   Decrypts the provided base64 encoded Chrome key
+    slack_cookie               Searches memory for Slack tokens
+    suspend                    suspend a process by pid
+    tasklist                   Lists currently running processes
+    unexpireuser               Enables and unlocks the specified user account
+    uptime                     Lists system boot time
+    userenum                   List computer user accounts
+    vssenum                    Enumerate snapshots on a remote machine
+    whoami                     internal version of whoami /all
+    windowlist                 list visible windows
+    wmi_query                  Runs a general WMI query

